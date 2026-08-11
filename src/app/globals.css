@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ============================================================
-   TST-BTK Design System — Tailwind v4 theme
+   Nexus Design System — Tailwind v4 theme
    Scope: Colors · Fonts · Text sizes · Font weights
    ============================================================ */
 @theme inline {
@@ -128,6 +128,27 @@ body {
   50% {
     opacity: 1;
     transform: scale(1.08);
+  }
+}
+/* Circuit board — pulse travelling along a trace */
+@keyframes tb-trace {
+  0% {
+    stroke-dashoffset: 526;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+/* Circuit board — junction node breathing */
+@keyframes tb-node {
+  0%,
+  100% {
+    opacity: 0.4;
+    r: 3;
+  }
+  50% {
+    opacity: 1;
+    r: 4.5;
   }
 }
 

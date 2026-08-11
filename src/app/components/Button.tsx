@@ -35,20 +35,20 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseStyle = clsx(
-    "inline-flex items-center justify-center gap-[8px] cursor-pointer select-none",
-    "font-medium transition-all duration-200",
+    "inline-flex items-center justify-center gap-2 cursor-pointer select-none",
+    "font-medium shadow-[0_2px_4px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.08)] transition-colors duration-200",
     "[&_svg]:size-[1.15em]",
-    "focus-visible:outline-none focus-visible:ring-2",
+    "focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2",
     "disabled:opacity-50 disabled:pointer-events-none",
   );
 
   // padding + label size — text-* utilities come from the design system (globals.css)
   const sizeStyles: Record<Size, string> = {
-    xs: "py-[3px] px-[8px] text-body-3",
-    small: "py-[4px] px-[12px] text-body-2",
-    base: "py-[8px] px-[16px] text-body-1",
-    large: "py-[12px] px-[24px] text-body-1",
-    extraLarge: "py-[16px] px-[32px] text-h5",
+    xs: "h-7 px-2.5 text-body-3",
+    small: "h-8 px-3 text-body-2",
+    base: "h-10 px-4 text-body-1",
+    large: "h-11 px-6 text-body-1",
+    extraLarge: "h-12 px-8 text-h5",
   };
 
   // equal padding for icon-only buttons (.btn-icon)
@@ -86,7 +86,7 @@ export default function Button({
     danger: clsx(
       "border border-danger text-danger bg-white focus-visible:ring-danger/40",
       "not-disabled:hover:bg-danger not-disabled:hover:text-white",
-      "not-disabled:active:bg-danger-dark"
+      "not-disabled:active:bg-danger-dark",
     ),
     "danger-soft": clsx(
       "bg-danger-light text-danger",
@@ -107,14 +107,13 @@ export default function Button({
         iconOnly ? iconSizes[size] : sizeStyles[size],
         variantStyles[variant],
         block && "w-full",
-        loading && "relative",
         className,
       )}
       {...props}
     >
       {loading && (
         <svg
-          className="absolute size-[1.2em] animate-spin"
+          className="size-[1.2em] animate-spin"
           viewBox="0 0 24 24"
           fill="none"
           aria-hidden="true"

@@ -1,9 +1,8 @@
 "use client";
-import Image from "next/image";
-import { useState } from "react";
-import picShow from "../../../public/images/Picture_13.png";
-import logo from "../../../public/images/Logo.png";
+import clsx from "clsx";
 import Link from "next/link";
+import { Controller } from "react-hook-form";
+import AuthLayout from "../components/AuthLayout";
 import {
   MailIcon,
   LockIcon,
@@ -13,194 +12,81 @@ import {
   PhoneIcon,
 } from "../components/icons";
 import DatePicker from "../components/DatePicker";
+import Button from "../components/Button";
+import { useSignupForm, StrengthTone } from "../hooks/useSignupForm";
+import usePasswordVisibility from "../hooks/usePasswordVisibility";
+
+/* Structural classes; the colour variant is swapped in, never appended —
+   border-neutral-300 and border-danger are the same property at the same
+   specificity, so appending would let Tailwind's source order decide. */
+const baseInput =
+  "w-full flex flex-row items-center gap-2 bg-white p-3 pl-4 text-b1 text-neutral-900 outline-none border rounded-lg placeholder:text-neutral-400 transition-colors";
+const inputIdle =
+  "border-neutral-300 focus-within:border-green-400 focus-within:ring-2 focus-within:ring-green-400/20";
+const inputInvalid =
+  "border-danger focus-within:border-danger focus-within:ring-2 focus-within:ring-danger/20";
+
+const inputBox = (invalid?: unknown) =>
+  clsx(baseInput, invalid ? inputInvalid : inputIdle);
+
+const TONE_CLASSES: Record<StrengthTone, { bar: string; text: string }> = {
+  none: { bar: "bg-neutral-200", text: "text-neutral-400" },
+  danger: { bar: "bg-danger", text: "text-danger" },
+  warning: { bar: "bg-warning", text: "text-warning-dark" },
+  info: { bar: "bg-blue-400", text: "text-blue-600" },
+  success: { bar: "bg-green-500", text: "text-green-600" },
+};
+
+function FieldError({ message }: { message?: string }) {
+  return message ? (
+    <span role="alert" className="text-b3 text-danger">
+      {message}
+    </span>
+  ) : null;
+}
 
 export default function SignupPage() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [agree, setAgree] = useState(false);
-  const [dob, setDob] = useState<Date | null>(null);
+  const {
+    register,
+    control,
+    errors,
+    onSubmit,
+    isSubmitting,
+    serverError,
+    passwordStrength,
+    confirmMatch,
+  } = useSignupForm();
 
-  // password requirement chips — static (visual only, shown as "met")
-  const passwordRules = [
-    "8 ตัวอักษรขึ้นไป",
-    "มีตัวพิมพ์ใหญ่",
-    "มีตัวเลข",
-    "มีอักขระพิเศษ",
-  ];
+  const passwordVisibility = usePasswordVisibility();
+  const confirmVisibility = usePasswordVisibility();
 
-  const baseInput =
-    "w-full flex flex-row items-center gap-2 bg-white p-3 pl-4 text-b1 text-neutral-900 outline-none border border-neutral-300 rounded-lg placeholder:text-neutral-400 transition-colors focus:border-green-400 focus:ring-2 focus:ring-green-400/20 focus-within:border-green-400 focus-within:ring-2 focus-within:ring-green-400/20";
+  const toneClass = TONE_CLASSES[passwordStrength.tone];
 
   return (
-    <div className="flex min-h-screen">
-      <aside className="relative w-2/5 shrink-0 flex flex-col justify-between overflow-hidden bg-green-600 px-8 pb-9 pt-8 text-white">
-        {/* Background photo */}
-        <Image
-          src={picShow}
-          alt="team image"
-          fill
-          priority
-          unoptimized
-          sizes="40vw"
-          className="inset-0 object-cover"
-        />
-        {/* Gradient + tint overlays */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(12,42,26,0.72) 0%, rgba(12,42,26,0.2) 30%, rgba(12,42,26,0.15) 55%, rgba(12,42,26,0.88) 100%)",
-          }}
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(120% 80% at 50% 60%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.35) 100%), linear-gradient(120deg, rgba(18,198,110,0.1) 0%, rgba(0,0,0,0) 50%, rgba(46,107,240,0.12) 100%)",
-          }}
-        />
-        {/* Warm glow blob — upper-right */}
-        <div
-          className="absolute right-[-40px] top-[-60px] h-[260px] w-[260px]"
-          style={{
-            background:
-              "radial-gradient(circle, rgba(255,236,170,0.45), rgba(0,0,0,0) 65%)",
-            animation: "tb-pulse 6s ease-in-out infinite",
-          }}
-        />
-        {/* Floating leaves — เรืองแสงลอยขึ้น + หมุนรอบตัว */}
-        {[
-          {
-            left: "12%",
-            delay: "0s",
-            dur: "14s",
-            size: 18,
-            rot: -20,
-            color: "#92eebe",
-          },
-          {
-            left: "28%",
-            delay: "4s",
-            dur: "18s",
-            size: 14,
-            rot: 12,
-            color: "#4ddd96",
-          },
-          {
-            left: "46%",
-            delay: "8s",
-            dur: "16s",
-            size: 22,
-            rot: -8,
-            color: "#c8f5dd",
-          },
-          {
-            left: "62%",
-            delay: "2s",
-            dur: "20s",
-            size: 16,
-            rot: 30,
-            color: "#92eebe",
-          },
-          {
-            left: "78%",
-            delay: "11s",
-            dur: "17s",
-            size: 20,
-            rot: -28,
-            color: "#4ddd96",
-          },
-          {
-            left: "88%",
-            delay: "6s",
-            dur: "22s",
-            size: 12,
-            rot: 18,
-            color: "#c8f5dd",
-          },
-        ].map((l, i) => (
-          <svg
-            key={i}
-            viewBox="0 0 24 24"
-            className="pointer-events-none absolute"
-            style={{
-              left: l.left,
-              bottom: -30,
-              width: l.size,
-              height: l.size,
-              opacity: 0.85,
-              animation: `tb-drift ${l.dur} linear ${l.delay} infinite`,
-            }}
-            aria-hidden="true"
-          >
-            <path
-              d="M12 2 C 6 6, 4 14, 12 22 C 20 14, 18 6, 12 2 Z M12 5 L12 21"
-              fill={l.color}
-              stroke="rgba(255,255,255,0.4)"
-              strokeWidth="0.6"
-              transform={`rotate(${l.rot} 12 12)`}
-            />
-          </svg>
-        ))}
-
-        {/* Top bar: brand + date badge */}
-        <div className="relative flex items-start justify-between">
-          <div className="flex items-center gap-[12px]">
-            <div className="relative flex h-15 w-15 items-center justify-center rounded-lg overflow-hidden bg-white shadow-[0_6px_16px_rgba(0,0,0,0.25)]">
-              <Image src={logo} alt="TST & BTK" fill className="object-cover" />
-            </div>
-            <div>
-              <div className="text-h5 tracking-wider text-white">
-                TST &amp; BTK
-              </div>
-              <div className="text-b1 text-white/85">
-                ระบบจัดการจัดการข้อมูล
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 rounded-full border border-white/20 bg-white/15 px-[12px] py-[6px] backdrop-blur-sm">
-            <span
-              className="h-[6px] w-[6px] rounded-full bg-green-300 shadow-[0_0_0_3px_rgba(18,198,110,0.35)]"
-              style={{ animation: "tb-pulse 2s ease-in-out infinite" }}
-            />
-            <span className="text-b3 text-white">เปิดรับสมาชิกใหม่</span>
-          </div>
-        </div>
-
-        {/* Middle: greeting / headline */}
-        <div className="relative">
-          <div className="flex items-center gap-3 text-b2 font-medium tracking-[0.08em] text-green-200">
-            <span className="h-px w-8 bg-green-300" />
-            ยินดีต้อนรับ · Welcome
-          </div>
-          <h1 className="text-h1 mt-4 text-white">
-            ร่วมสร้างสิ่งที่ยั่งยืนไปด้วยกัน — ตั้งแต่วันนี้
-          </h1>
-          <p className="mt-3 max-w-[450px] text-b2 text-white/85">
-            Be Part of the Change Join us in building a more sustainable future.
-          </p>
-        </div>
-
-        {/* Bottom tagline */}
-        <div className="relative flex items-center gap-3 text-body-3 tracking-wider text-white/75">
-          <span className="h-px w-7 bg-white/50" />
-          Circular Economy · Thailand · since 2022
-        </div>
-      </aside>
-      <main className="flex flex-1 flex-col justify-center px-[90px] py-[64px]">
-        {/* New-here link */}
-        <div className="flex justify-end gap-1.5 text-body-2 text-neutral-600">
+    <AuthLayout
+      badge={<span>เปิดรับสมาชิกใหม่</span>}
+      eyebrow={
+        <>
+          ยินดีต้อนรับ
+          <span className="opacity-50">· Welcome</span>
+        </>
+      }
+      headline="ร่วมสร้างสิ่งที่ยั่งยืนไปด้วยกัน — ตั้งแต่วันนี้"
+      description="Be Part of the Change Join us in building a more sustainable future."
+    >
+      <div className="flex min-h-screen flex-col gap-10 p-20">
+        {/* Cross-link to login */}
+        <div className="flex justify-end gap-2 text-body-2 text-neutral-600">
           <span>มีบัญชีอยู่แล้ว? / Already a member?</span>
           <Link
             href="/login"
             className="font-medium text-green-600 hover:text-green-700"
           >
-            เข้าสู่ระบบ →
+            เข้าสู่ระบบ
           </Link>
         </div>
 
-        {/* Form block */}
-        <div className="mx-auto w-full max-w-3xl px-6">
+        <div className="w-full">
           <h2 className="text-h2 leading-tight text-neutral-900">
             สมัครสมาชิก
           </h2>
@@ -209,54 +95,60 @@ export default function SignupPage() {
           </p>
 
           <form
-            className="mt-8 flex flex-col gap-6"
-            onSubmit={(e) => e.preventDefault()}
+            className="mt-8 grid grid-cols-2 gap-y-7 gap-x-6"
+            onSubmit={onSubmit}
+            noValidate
           >
-            {/* First and Last Name */}
-            <div className="flex flex-row gap-6">
-              <div className="w-full min-w-0 flex flex-col gap-1">
-                <label
-                  htmlFor="firstname"
-                  className="flex items-baseline justify-between"
-                >
-                  <span className="text-b2 font-medium text-neutral-600">
-                    ชื่อ
-                  </span>
-                  <span className="text-b3 text-neutral-500">First name</span>
-                </label>
-                <div className={baseInput}>
-                  <UserIcon className="pointer-events-none h-[18px] w-[18px] text-neutral-500" />
-                  <input
-                    id="firstname"
-                    type="text"
-                    placeholder="First name"
-                    className="w-full min-w-0 grow outline-none placeholder:text-neutral-400"
-                  />
-                </div>
+            {/* First Name */}
+            <div className="flex flex-col gap-1">
+              <label
+                htmlFor="firstname"
+                className="flex items-baseline justify-between"
+              >
+                <span className="text-b2 font-medium text-neutral-600">
+                  ชื่อ
+                </span>
+                <span className="text-b2 text-neutral-500">First name</span>
+              </label>
+              <div className={inputBox(errors.firstName)}>
+                <UserIcon className="pointer-events-none h-6 w-6 text-neutral-500" />
+                <input
+                  id="firstname"
+                  type="text"
+                  autoComplete="given-name"
+                  aria-invalid={!!errors.firstName}
+                  className="w-full min-w-0 grow outline-none"
+                  {...register("firstName")}
+                />
               </div>
-              <div className="w-full min-w-0 flex flex-col gap-1">
-                <label
-                  htmlFor="lastname"
-                  className="flex items-baseline justify-between"
-                >
-                  <span className="text-b2 font-medium text-neutral-600">
-                    นามสกุล
-                  </span>
-                  <span className="text-b3 text-neutral-500">Last name</span>
-                </label>
-                <div className={baseInput}>
-                  <UserIcon className="pointer-events-none h-[18px] w-[18px] text-neutral-500" />
-                  <input
-                    id="lastname"
-                    type="text"
-                    placeholder="Last name"
-                    className="w-full min-w-0 grow outline-none placeholder:text-neutral-400"
-                  />
-                </div>
+              <FieldError message={errors.firstName?.message} />
+            </div>
+            {/* Last Name */}
+            <div className="flex flex-col gap-1">
+              <label
+                htmlFor="lastname"
+                className="flex items-baseline justify-between"
+              >
+                <span className="text-b2 font-medium text-neutral-600">
+                  นามสกุล
+                </span>
+                <span className="text-b2 text-neutral-500">Last name</span>
+              </label>
+              <div className={inputBox(errors.lastName)}>
+                <UserIcon className="pointer-events-none h-6 w-6 text-neutral-500" />
+                <input
+                  id="lastname"
+                  type="text"
+                  autoComplete="family-name"
+                  aria-invalid={!!errors.lastName}
+                  className="w-full min-w-0 grow outline-none"
+                  {...register("lastName")}
+                />
               </div>
+              <FieldError message={errors.lastName?.message} />
             </div>
             {/* Email */}
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 col-span-2">
               <label
                 htmlFor="email"
                 className="flex items-baseline justify-between"
@@ -264,64 +156,78 @@ export default function SignupPage() {
                 <span className="text-b2 font-medium text-neutral-600">
                   อีเมล
                 </span>
-                <span className="text-b3 text-neutral-500">Email address</span>
+                <span className="text-b2 text-neutral-500">Email address</span>
               </label>
-              <div className={baseInput}>
-                <MailIcon className="pointer-events-none h-[18px] w-[18px] text-neutral-500" />
+              <div className={inputBox(errors.email)}>
+                <MailIcon className="pointer-events-none h-6 w-6 text-neutral-500" />
                 <input
                   id="email"
                   type="email"
                   autoComplete="email"
-                  placeholder="you@tst-btk.co.th"
-                  className="grow outline-none placeholder:text-neutral-400"
+                  aria-invalid={!!errors.email}
+                  className="grow outline-none"
+                  {...register("email")}
                 />
               </div>
+              <FieldError message={errors.email?.message} />
             </div>
-            {/* Phone and Date of birth */}
-            <div className="flex flex-row gap-6">
-              <div className="w-full flex flex-col gap-1">
-                <label
-                  htmlFor="phone"
-                  className="flex items-baseline justify-between"
-                >
-                  <span className="text-b2 font-medium text-neutral-600">
-                    เบอร์โทรศัพท์
-                  </span>
-                  <span className="text-b3 text-neutral-500">Phone</span>
-                </label>
-                <div className={baseInput}>
-                  <PhoneIcon className="pointer-events-none h-[18px] w-[18px] text-neutral-500" />
-                  <input
-                    id="phone"
-                    type="tel"
-                    placeholder="xxx-xxx-xxxx"
-                    className="w-full min-w-0 grow outline-none placeholder:text-neutral-400"
-                  />
-                </div>
-              </div>
-              <div className="w-full flex flex-col gap-1">
-                <label
-                  htmlFor="birthdate"
-                  className="flex items-baseline justify-between"
-                >
-                  <span className="text-b2 font-medium text-neutral-600">
-                    วันเกิด
-                  </span>
-                  <span className="text-b3 text-neutral-500">
-                    Date of birth
-                  </span>
-                </label>
-                <DatePicker
-                  id="birthdate"
-                  value={dob}
-                  onChange={setDob}
-                  maxDate={new Date()}
-                  className={baseInput}
+            {/* Phone */}
+            <div className="flex flex-col gap-1">
+              <label
+                htmlFor="phone"
+                className="flex items-baseline justify-between"
+              >
+                <span className="text-b2 font-medium text-neutral-600">
+                  เบอร์โทรศัพท์
+                </span>
+                <span className="text-b2 text-neutral-500">Phone</span>
+              </label>
+              <div className={inputBox(errors.phone)}>
+                <PhoneIcon className="pointer-events-none h-6 w-6 text-neutral-500" />
+                <input
+                  id="phone"
+                  type="tel"
+                  inputMode="numeric"
+                  maxLength={10}
+                  autoComplete="tel"
+                  aria-invalid={!!errors.phone}
+                  className="w-full min-w-0 grow outline-none"
+                  {...register("phone")}
                 />
               </div>
+              <FieldError message={errors.phone?.message} />
+            </div>
+            {/* Date of birth */}
+            <div className="flex flex-col gap-1">
+              <label
+                htmlFor="birthdate"
+                className="flex items-baseline justify-between"
+              >
+                <span className="text-b2 font-medium text-neutral-600">
+                  วันเกิด
+                </span>
+                <span className="text-b2 text-neutral-500">Date of birth</span>
+              </label>
+              <Controller
+                control={control}
+                name="birthDate"
+                render={({ field, fieldState }) => (
+                  <DatePicker
+                    id="birthdate"
+                    value={field.value ?? null}
+                    onChange={(d) => {
+                      field.onChange(d);
+                      field.onBlur();
+                    }}
+                    maxDate={new Date()}
+                    className={inputBox(fieldState.error)}
+                  />
+                )}
+              />
+              <FieldError message={errors.birthDate?.message} />
             </div>
             {/* Password */}
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 col-span-2">
               <label
                 htmlFor="password"
                 className="flex items-baseline justify-between"
@@ -329,60 +235,90 @@ export default function SignupPage() {
                 <span className="text-b2 font-medium text-neutral-600">
                   รหัสผ่าน
                 </span>
-                <span className="text-b3 text-neutral-500">Password</span>
+                <span className="text-b2 text-neutral-500">Password</span>
               </label>
-              <div className={baseInput}>
-                <LockIcon className="pointer-events-none h-[18px] w-[18px] text-neutral-500" />
+              <div className={inputBox(errors.password)}>
+                <LockIcon className="pointer-events-none h-6 w-6 text-neutral-500" />
                 <input
                   id="password"
-                  type={showPassword ? "text" : "password"}
+                  type={passwordVisibility.inputType}
                   autoComplete="new-password"
-                  placeholder="••••••••"
-                  className="grow outline-none placeholder:text-neutral-400"
+                  aria-invalid={!!errors.password}
+                  className="grow outline-none"
+                  {...register("password")}
                 />
                 <button
                   type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  aria-label={showPassword ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน"}
-                  className="h-[18px] w-[18px] text-neutral-500 hover:text-neutral-700 cursor-pointer"
+                  onClick={passwordVisibility.toggleVisibility}
+                  aria-label={
+                    passwordVisibility.isVisible
+                      ? "ซ่อนรหัสผ่าน"
+                      : "แสดงรหัสผ่าน"
+                  }
+                  className="cursor-pointer h-6 w-6 text-neutral-500 hover:text-neutral-700"
                 >
-                  <EyeIcon off={showPassword} className="h-[18px] w-[18px]" />
+                  <EyeIcon
+                    off={passwordVisibility.isVisible}
+                    className="h-6 w-6"
+                  />
                 </button>
               </div>
-
-              {/* Strength meter — static, segmented (4 ขีด) + label ตาม design */}
+              {/* Strength meter — 4 ขีด, filled by how many rules pass */}
               <div className="mt-2 flex items-center gap-10">
                 <div className="flex grow items-center gap-1">
                   {Array.from({ length: 4 }).map((_, i) => (
                     <div
                       key={i}
-                      className="h-1 grow rounded-full bg-green-500"
+                      className={clsx(
+                        "h-1 grow rounded-full transition-colors",
+                        i < passwordStrength.score
+                          ? toneClass.bar
+                          : "bg-neutral-200",
+                      )}
                     />
                   ))}
                 </div>
-                <span className="shrink-0 text-b3 font-medium text-green-600">
-                  แข็งแกร่ง
+                <span
+                  className={clsx(
+                    "min-w-16 shrink-0 text-right text-b3 font-medium transition-colors",
+                    toneClass.text,
+                  )}
+                >
+                  {passwordStrength.label || " "}
                 </span>
               </div>
 
-              {/* Requirement chips — static (met) ตาม design: ดอตเขียว + เช็คขาว + ข้อความ */}
+              {/* Requirement chips — ดอต + เช็ค + ข้อความ, ติ๊กทีละข้อตามที่พิมพ์ */}
               <div className="mt-2 flex flex-wrap gap-x-3.5 gap-y-2">
-                {passwordRules.map((rule) => (
+                {passwordStrength.rules.map((rule) => (
                   <span
-                    key={rule}
-                    className="flex items-center gap-1 text-b3 text-green-700"
+                    key={rule.label}
+                    className={clsx(
+                      "flex items-center gap-1 text-b3 transition-colors",
+                      rule.met ? "text-green-700" : "text-neutral-500",
+                    )}
                   >
-                    <span className="flex h-3 w-3 shrink-0 items-center justify-center rounded-full bg-green-400">
-                      <CheckIcon className="h-2 w-2 text-white" />
+                    <span
+                      className={clsx(
+                        "flex h-3 w-3 shrink-0 items-center justify-center rounded-full transition-colors",
+                        rule.met ? "bg-green-400" : "bg-neutral-300",
+                      )}
+                    >
+                      {/* always rendered so the dot never resizes */}
+                      <CheckIcon
+                        className={clsx(
+                          "h-2 w-2",
+                          rule.met ? "text-white" : "text-transparent",
+                        )}
+                      />
                     </span>
-                    {rule}
+                    {rule.label}
                   </span>
                 ))}
               </div>
             </div>
-
             {/* Confirm password */}
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 col-span-2">
               <label
                 htmlFor="confirm-password"
                 className="flex items-baseline justify-between"
@@ -390,73 +326,140 @@ export default function SignupPage() {
                 <span className="text-b2 font-medium text-neutral-600">
                   ยืนยันรหัสผ่าน
                 </span>
-                <span className="text-b3 text-neutral-500">
+                <span className="text-b2 text-neutral-500">
                   Confirm password
                 </span>
               </label>
-              <div className={baseInput}>
-                <LockIcon className="pointer-events-none h-[18px] w-[18px] text-neutral-500" />
+              <div
+                className={inputBox(
+                  errors.confirmPassword || confirmMatch === "mismatch",
+                )}
+              >
+                <LockIcon className="pointer-events-none h-6 w-6 text-neutral-500" />
                 <input
                   id="confirm-password"
-                  type={showConfirm ? "text" : "password"}
+                  type={confirmVisibility.inputType}
                   autoComplete="new-password"
-                  placeholder="••••••••"
-                  className="grow outline-none placeholder:text-neutral-400"
+                  aria-invalid={confirmMatch === "mismatch"}
+                  className="grow outline-none"
+                  {...register("confirmPassword")}
                 />
                 <button
                   type="button"
-                  onClick={() => setShowConfirm((v) => !v)}
-                  aria-label={showConfirm ? "ซ่อนรหัสผ่าน" : "แสดงรหัสผ่าน"}
-                  className="h-[18px] w-[18px] text-neutral-500 hover:text-neutral-700 cursor-pointer"
+                  onClick={confirmVisibility.toggleVisibility}
+                  aria-label={
+                    confirmVisibility.isVisible
+                      ? "ซ่อนรหัสผ่าน"
+                      : "แสดงรหัสผ่าน"
+                  }
+                  className="cursor-pointer h-6 w-6 text-neutral-500 hover:text-neutral-700"
                 >
-                  <EyeIcon off={showConfirm} className="h-[18px] w-[18px]" />
+                  <EyeIcon
+                    off={confirmVisibility.isVisible}
+                    className="h-6 w-6"
+                  />
                 </button>
               </div>
-              {/* Match note — static */}
-              <span className="mt-1 flex items-center gap-1 text-b3 text-green-600">
-                <CheckIcon className="h-3 w-3" />
-                รหัสผ่านตรงกัน
-              </span>
+
+              {/* Match note — the derived state wins while the field has content,
+                  because zod's object-level .refine is skipped whenever another
+                  field is still invalid. */}
+              {confirmMatch === "idle" ? (
+                errors.confirmPassword ? (
+                  <FieldError message={errors.confirmPassword.message} />
+                ) : (
+                  <span className="invisible text-b3">&nbsp;</span>
+                )
+              ) : (
+                <span
+                  className={clsx(
+                    "mt-1 flex items-center gap-1 text-b3",
+                    confirmMatch === "match" ? "text-green-600" : "text-danger",
+                  )}
+                >
+                  {confirmMatch === "match" && (
+                    <CheckIcon className="h-3 w-3" />
+                  )}
+                  {confirmMatch === "match"
+                    ? "รหัสผ่านตรงกัน"
+                    : "รหัสผ่านไม่ตรงกัน"}
+                </span>
+              )}
+            </div>
+            {/* PDPA consent */}
+            <div className="col-span-2 flex flex-col gap-1">
+              <Controller
+                control={control}
+                name="agree"
+                render={({ field }) => (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      field.onChange(field.value !== true);
+                      field.onBlur();
+                    }}
+                    aria-pressed={field.value === true}
+                    className="flex items-start gap-2 text-left text-b2 text-neutral-600 cursor-pointer"
+                  >
+                    <span
+                      className={clsx(
+                        "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border transition-colors",
+                        field.value === true
+                          ? "border-green-400 bg-green-400 text-white"
+                          : errors.agree
+                            ? "border-danger bg-white text-transparent"
+                            : "border-neutral-400 bg-white text-transparent",
+                      )}
+                    >
+                      <CheckIcon className="h-3 w-3" />
+                    </span>
+                    <span>
+                      ฉันยอมรับ{" "}
+                      <a
+                        href="#"
+                        className="text-green-600 hover:text-green-700"
+                      >
+                        เงื่อนไขการใช้งาน
+                      </a>{" "}
+                      และ{" "}
+                      <a
+                        href="#"
+                        className="text-green-600 hover:text-green-700"
+                      >
+                        นโยบายความเป็นส่วนตัว
+                      </a>{" "}
+                      (PDPA) · I agree to the Terms &amp; Privacy Policy
+                    </span>
+                  </button>
+                )}
+              />
+              <FieldError message={errors.agree?.message} />
             </div>
 
-            {/* PDPA consent */}
-            <button
-              type="button"
-              onClick={() => setAgree((v) => !v)}
-              className="flex items-start gap-2 text-left text-b2 text-neutral-600 cursor-pointer"
-            >
-              <span
-                className={`mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded border transition-colors ${
-                  agree
-                    ? "border-green-400 bg-green-400 text-white"
-                    : "border-neutral-400 bg-white text-transparent"
-                }`}
+            {/* Server error */}
+            {serverError && (
+              <div
+                role="alert"
+                className="col-span-2 rounded-lg border border-danger/30 bg-danger-light px-4 py-3 text-b2 text-danger-dark"
               >
-                <CheckIcon className="h-3 w-3" />
-              </span>
-              <span>
-                ฉันยอมรับ{" "}
-                <a href="#" className="text-green-600 hover:text-green-700">
-                  เงื่อนไขการใช้งาน
-                </a>{" "}
-                และ{" "}
-                <a href="#" className="text-green-600 hover:text-green-700">
-                  นโยบายความเป็นส่วนตัว
-                </a>{" "}
-                (PDPA) · I agree to the Terms &amp; Privacy Policy
-              </span>
-            </button>
+                {serverError}
+              </div>
+            )}
 
             {/* Submit */}
-            <button
+            <Button
+              variant="primary"
+              size="large"
               type="submit"
-              className="mt-1 flex h-12 w-full items-center justify-center rounded-lg bg-green-400 text-base font-medium text-white transition-colors hover:bg-green-500 active:bg-green-600"
+              block
+              loading={isSubmitting}
+              className="col-span-2"
             >
               สมัครสมาชิก / Create account
-            </button>
+            </Button>
           </form>
         </div>
-      </main>
-    </div>
+      </div>
+    </AuthLayout>
   );
 }

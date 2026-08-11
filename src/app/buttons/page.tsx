@@ -62,7 +62,7 @@ export default function ButtonsShowcase() {
         </p>
         <h1 className="text-h1 mb-[8px]">ปุ่ม / Buttons</h1>
         <p className="max-w-[620px] text-body-1 text-neutral-600">
-          ชุดปุ่มทั้งหมดของระบบ TST &amp; BTK — variants, ขนาด, สถานะ, ปุ่มไอคอน, สถานะโหลด และตัวปรับแต่ง
+          ชุดปุ่มทั้งหมดของระบบ Nexus — variants, ขนาด, สถานะ, ปุ่มไอคอน, สถานะโหลด และตัวปรับแต่ง
           ทุกตัวเป็น <code className="rounded bg-neutral-100 px-[6px] py-[2px] font-eng text-[12px] text-green-700">&lt;Button /&gt;</code> component เดียว
         </p>
       </header>
