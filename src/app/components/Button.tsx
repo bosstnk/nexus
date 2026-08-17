@@ -36,11 +36,15 @@ export default function Button({
 }: ButtonProps) {
   const baseStyle = clsx(
     "inline-flex items-center justify-center gap-2 cursor-pointer select-none",
-    "font-medium shadow-[0_2px_4px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.08)] transition-colors duration-200",
+    "font-medium transition-colors duration-200",
     "[&_svg]:size-[1.15em]",
     "focus:outline-none focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2",
     "disabled:opacity-50 disabled:pointer-events-none",
   );
+
+  // ghost is a plain text link — no elevation
+  const shadowStyle =
+    "shadow-[0_2px_4px_rgba(0,0,0,0.15),0_6px_12px_rgba(0,0,0,0.08)]";
 
   // padding + label size — text-* utilities come from the design system (globals.css)
   const sizeStyles: Record<Size, string> = {
@@ -68,9 +72,10 @@ export default function Button({
       "not-disabled:active:bg-green-600",
     ),
     secondary: clsx(
-      "bg-blue-50 text-blue-600 border border-blue-200 focus-visible:ring-blue-200/40",
-      "not-disabled:hover:bg-blue-100",
-      "not-disabled:active:bg-blue-200",
+      "text-green-500",
+      "not-disabled:hover:bg-green-50",
+      "not-disabled:hover:text-green-600",
+      "not-disabled:active:bg-green-100",
     ),
     outline: clsx(
       "bg-white text-neutral-700 border border-neutral-400 focus-visible:ring-neutral-400/40",
@@ -78,10 +83,9 @@ export default function Button({
       "not-disabled:active:bg-neutral-200",
     ),
     ghost: clsx(
-      "text-green-500",
-      "not-disabled:hover:bg-green-50",
+      "text-green-500 underline",
       "not-disabled:hover:text-green-600",
-      "not-disabled:active:bg-green-100",
+      "not-disabled:active:text-green-700",
     ),
     danger: clsx(
       "border border-danger text-danger bg-white focus-visible:ring-danger/40",
@@ -103,9 +107,10 @@ export default function Button({
       aria-busy={loading || undefined}
       className={clsx(
         baseStyle,
+        variantStyles[variant],
+        variant !== "ghost" && shadowStyle,
         pill ? "rounded-full" : "rounded-lg",
         iconOnly ? iconSizes[size] : sizeStyles[size],
-        variantStyles[variant],
         block && "w-full",
         className,
       )}

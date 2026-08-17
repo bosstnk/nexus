@@ -172,7 +172,7 @@ export default function LoginPage() {
 
         {/* Copyright */}
         <p className="text-start text-b3 tracking-wider text-neutral-500">
-          © 2026 TON SHENG TAI CO., LTD. & BAANTONKAEW CO., LTD. · v1.0
+          © 2026 Nexus · v1.0
         </p>
       </div>
     </AuthLayout>
