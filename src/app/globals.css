@@ -106,7 +106,7 @@ body {
 /* ============================================================
    ANIMATIONS — login hero ambience
    ============================================================ */
-@keyframes tb-drift {
+@keyframes nexus-drift {
   0% {
     transform: translate(0, 0) rotate(0deg);
     opacity: 0;
@@ -119,7 +119,7 @@ body {
     opacity: 0;
   }
 }
-@keyframes tb-pulse {
+@keyframes nexus-pulse {
   0%,
   100% {
     opacity: 0.7;
@@ -131,7 +131,7 @@ body {
   }
 }
 /* Circuit board — pulse travelling along a trace */
-@keyframes tb-trace {
+@keyframes nexus-trace {
   0% {
     stroke-dashoffset: 526;
   }
@@ -140,7 +140,7 @@ body {
   }
 }
 /* Circuit board — junction node breathing */
-@keyframes tb-node {
+@keyframes nexus-node {
   0%,
   100% {
     opacity: 0.4;

@@ -52,7 +52,7 @@ export default async function SignupSuccessPage({
             <div className="relative mx-auto flex h-24 w-24 items-center justify-center">
               <span
                 className="absolute inset-0 rounded-full bg-green-100"
-                style={{ animation: "tb-pulse 2.4s ease-in-out infinite" }}
+                style={{ animation: "nexus-pulse 2.4s ease-in-out infinite" }}
               />
               <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-green-500 text-white shadow-[0_10px_24px_rgba(18,198,110,0.45)]">
                 <svg

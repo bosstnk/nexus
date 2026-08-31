@@ -92,7 +92,7 @@ export default function AuthLayout({
               strokeDasharray="26 500"
               style={{
                 filter: "drop-shadow(0 0 4px rgba(77,221,150,0.9))",
-                animation: `tb-trace ${t.dur} linear ${t.delay} infinite`,
+                animation: `nexus-trace ${t.dur} linear ${t.delay} infinite`,
               }}
             />
           ))}
@@ -105,7 +105,7 @@ export default function AuthLayout({
               fill="var(--color-green-300)"
               style={{
                 filter: "drop-shadow(0 0 5px rgba(77,221,150,0.8))",
-                animation: `tb-node 2.4s ease-in-out ${i * 0.3}s infinite`,
+                animation: `nexus-node 2.4s ease-in-out ${i * 0.3}s infinite`,
               }}
             />
           ))}
@@ -117,7 +117,7 @@ export default function AuthLayout({
           style={{
             background:
               "radial-gradient(circle, rgba(18,198,110,0.3), rgba(0,0,0,0) 68%)",
-            animation: "tb-pulse 7s ease-in-out infinite",
+            animation: "nexus-pulse 7s ease-in-out infinite",
           }}
         />
 
@@ -134,7 +134,7 @@ export default function AuthLayout({
           <div className="flex items-center gap-2 rounded-full border border-green-200/30 bg-green-200/10 px-5 py-1.5 text-body-3 leading-loose backdrop-blur-sm">
             <span
               className="h-1.5 w-1.5 rounded-full bg-green-300 shadow-[0_0_0_3px_rgba(18,198,110,0.35)]"
-              style={{ animation: "tb-pulse 2s ease-in-out infinite" }}
+              style={{ animation: "nexus-pulse 2s ease-in-out infinite" }}
             />
             {badge}
           </div>

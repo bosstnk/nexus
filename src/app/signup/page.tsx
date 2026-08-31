@@ -72,7 +72,7 @@ export default function SignupPage() {
             สมัครสมาชิก
           </h2>
           <p className="mt-1 text-b2 text-neutral-600">
-            Create your TB account
+            Create your Nexus account
           </p>
 
           <form
