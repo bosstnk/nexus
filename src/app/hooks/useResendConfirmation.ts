@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { supabase } from "../supabase.client";
+import { createClient } from "../lib/supabase/client";
 import { confirmRedirectTo, toThai } from "../lib/authErrors";
 
 const COOLDOWN_SECONDS = 60;
@@ -38,6 +38,7 @@ export default function useResendConfirmation(email: string | null) {
     setIsSending(true);
     setServerError(null);
 
+    const supabase = createClient();
     const { error } = await supabase.auth.resend({
       type: "signup",
       email,

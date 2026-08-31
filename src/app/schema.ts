@@ -39,10 +39,11 @@ export const signupSchema = z
       .pipe(z.email({ error: "รูปแบบอีเมลไม่ถูกต้อง" })),
 
     // plain 10 digits — the input is not auto-formatted, so no dashes here
-    phone: requiredString("กรุณากรอกเบอร์โทรศัพท์").regex(/^[0-9]{10}$/, { error: "เบอร์โทรศัพท์ต้องเป็นตัวเลข 10 หลัก",}),
+    phone: requiredString("กรุณากรอกเบอร์โทรศัพท์").regex(/^[0-9]{10}$/, {
+      error: "เบอร์โทรศัพท์ต้องเป็นตัวเลข 10 หลัก",
+    }),
 
-    birthDate: z
-      .date({ error: "กรุณาเลือกวันเกิด" }),
+    birthDate: z.date({ error: "กรุณาเลือกวันเกิด" }),
 
     password: z
       .string({ error: "กรุณากรอกรหัสผ่าน" })
@@ -69,3 +70,21 @@ export const signupSchema = z
 /* No field changes the *type* of its value (only trim/lowercase), so zod's
    input and output types are identical — one type is enough. */
 export type SignupForm = z.infer<typeof signupSchema>;
+
+/* ── login ─────────────────────────────────────────────────────────────── */
+export const loginSchema = z.object({
+  email: z
+    .string({ error: "กรุณากรอกอีเมล" })
+    .trim()
+    .toLowerCase()
+    .min(1, { error: "กรุณากรอกอีเมล" })
+    .pipe(z.email({ error: "รูปแบบอีเมลไม่ถูกต้อง" })),
+  /* Plain .min(1), not requiredString(): that helper trims, and
+     signupSchema.password does not. Trimming here would lock out anyone whose
+     password has a leading/trailing space. */
+  password: z
+    .string({ error: "กรุณากรอกรหัสผ่าน" })
+    .min(1, { error: "กรุณากรอกรหัสผ่าน" }),
+});
+
+export type LoginForm = z.infer<typeof loginSchema>;
