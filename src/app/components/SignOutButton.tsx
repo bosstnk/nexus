@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Button from "../components/Button";
+import clsx from "clsx";
+import { LogOutIcon } from "./icons";
 import { createClient } from "../lib/supabase/client";
 
 export default function SignOutButton() {
@@ -28,15 +29,20 @@ export default function SignOutButton() {
   };
 
   return (
-    <Button
-      variant="outline"
-      size="large"
-      block
-      className="mt-8"
-      loading={signingOut}
+    <button
+      type="button"
       onClick={handleSignOut}
+      disabled={signingOut}
+      aria-label="ออกจากระบบ"
+      title="ออกจากระบบ"
+      className={clsx(
+        "grid size-9 shrink-0 place-items-center rounded-lg transition-colors",
+        signingOut
+          ? "cursor-not-allowed text-neutral-300"
+          : "cursor-pointer text-neutral-500 hover:bg-neutral-100 hover:text-danger",
+      )}
     >
-      ออกจากระบบ
-    </Button>
+      <LogOutIcon size={20} className={clsx(signingOut && "animate-pulse")} />
+    </button>
   );
 }
