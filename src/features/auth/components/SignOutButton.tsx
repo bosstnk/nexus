@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import clsx from "clsx";
-import { LogOutIcon } from "./icons";
-import { createClient } from "../lib/supabase/client";
+import { LogOutIcon } from "@/components/ui/icons";
+import { createClient } from "@/lib/supabase/client";
 
 export default function SignOutButton() {
   const router = useRouter();

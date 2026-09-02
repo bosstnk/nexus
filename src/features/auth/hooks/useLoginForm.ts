@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createClient } from "../lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 import { loginSchema, type LoginForm } from "../schema";
-import { LOGIN_FAILED, toThai } from "../lib/authErrors";
+import { LOGIN_FAILED, toThai } from "../authErrors";
 
 export function useLoginForm() {
   const router = useRouter();

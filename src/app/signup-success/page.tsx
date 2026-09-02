@@ -1,6 +1,6 @@
 import Link from "next/link";
-import AuthLayout from "../components/AuthLayout";
-import { createClient } from "../lib/supabase/server";
+import AuthLayout from "@/features/auth/components/AuthLayout";
+import { createClient } from "@/lib/supabase/server";
 
 const ctaClass =
   "mt-8 flex h-12 w-full items-center justify-center rounded-lg bg-green-400 text-base font-medium text-white transition-colors hover:bg-green-500 active:bg-green-600";

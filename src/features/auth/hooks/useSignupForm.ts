@@ -4,9 +4,9 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createClient } from "../lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 import { PASSWORD_RULES, signupSchema, type SignupForm } from "../schema";
-import { EMAIL_TAKEN, confirmRedirectTo, toThai } from "../lib/authErrors";
+import { EMAIL_TAKEN, confirmRedirectTo, toThai } from "../authErrors";
 
 const STRENGTH = [
   { label: "", tone: "none" },

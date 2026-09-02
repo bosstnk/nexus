@@ -2,10 +2,10 @@
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { z } from "zod";
-import { MailIcon } from "../components/icons";
-import AuthLayout from "../components/AuthLayout";
-import Button from "../components/Button";
-import useResendConfirmation from "../hooks/useResendConfirmation";
+import { MailIcon } from "@/components/ui/icons";
+import AuthLayout from "@/features/auth/components/AuthLayout";
+import Button from "@/components/ui/Button";
+import useResendConfirmation from "@/features/auth/hooks/useResendConfirmation";
 
 function ConfirmEmailCard() {
   const raw = useSearchParams().get("email")?.trim() ?? "";
