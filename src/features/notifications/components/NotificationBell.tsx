@@ -8,7 +8,6 @@ import {
   ShieldAlertIcon,
 } from "@/components/ui/icons";
 
-/** รายการแจ้งเตือน — ยัง mockup อยู่ */
 const NOTIFICATIONS = [
   {
     icon: NewspaperIcon,
@@ -34,7 +33,6 @@ export default function NotificationBell() {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
-  // ปิดเมนูเมื่อคลิกนอกกล่องหรือกด Esc
   useEffect(() => {
     if (!open) return;
 

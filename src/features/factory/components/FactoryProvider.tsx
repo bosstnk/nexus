@@ -9,7 +9,6 @@ import {
 } from "../factories";
 
 type FactoryContextValue = {
-  /** โรงงานที่กำลังเลือกอยู่ */
   factory: Factory;
   factories: Factory[];
   selectFactory: (id: string) => void;
@@ -17,7 +16,6 @@ type FactoryContextValue = {
 
 const FactoryContext = createContext<FactoryContextValue | null>(null);
 
-/** เก็บโรงงานที่เลือกไว้ที่เดียว เพื่อให้ TopBar กับ GreetingBar เห็นตรงกัน */
 export function FactoryProvider({
   children,
   defaultFactoryId = DEFAULT_FACTORY_ID,

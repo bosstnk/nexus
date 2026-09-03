@@ -19,7 +19,6 @@ export type Priority = "urgent" | "high" | "normal" | "info";
 
 export type NewsItem = {
   id: number;
-  /** วันที่เผยแพร่รูปแบบ ISO — ตรงกับที่ฐานข้อมูลจะส่งมา ส่วนวันที่ภาษาไทยค่อยจัดรูปแบบตอนแสดงผล */
   date: string;
   title: string;
   titleEn: string;
@@ -28,12 +27,9 @@ export type NewsItem = {
   category: string;
   author: string;
   img: StaticImageData | null;
-  /** Admin ปักหมุดไว้ → มีสิทธิ์ขึ้น Carousel (ต้องมีรูปด้วย) */
   pinned: boolean;
 };
 
-/* แหล่งข้อมูลข่าวที่เดียว — ทั้ง Carousel และ NewsSection derive จากลิสต์นี้
-   Admin โพสต์ครั้งเดียวแล้วไปโผล่ทุกที่ (ยัง mockup อยู่) */
 export const NEWS_ITEMS: NewsItem[] = [
   {
     id: 1,
@@ -167,44 +163,39 @@ export const NEWS_ITEMS: NewsItem[] = [
   },
 ];
 
-/** ป้ายระดับความสำคัญ — `chip` ใช้ในการ์ด · `overlay` ใช้ตอนวางทับรูป */
+export const PRIORITY_BADGE =
+  "rounded-full px-2 py-1 text-body-3 font-semibold text-white";
+
 export const PRIORITY_CONFIG: Record<
   Priority,
-  { label: string; labelEn: string; chip: string; overlay: string }
+  { label: string; labelEn: string; badge: string }
 > = {
   urgent: {
     label: "เร่งด่วน",
     labelEn: "Urgent",
-    chip: "bg-warning-light text-warning-dark border-warning",
-    overlay: "bg-white/95 text-warning-dark border-warning",
+    badge: "bg-warning-dark",
   },
   high: {
     label: "สำคัญ",
     labelEn: "High",
-    chip: "bg-danger-light text-danger-dark border-danger/30",
-    overlay: "bg-white/95 text-danger-dark border-danger/30",
+    badge: "bg-danger-dark",
   },
   normal: {
     label: "ปกติ",
     labelEn: "Normal",
-    chip: "bg-green-50 text-green-700 border-green-200",
-    overlay: "bg-white/95 text-green-700 border-green-200",
+    badge: "bg-green-600",
   },
   info: {
     label: "ข้อมูล",
     labelEn: "Info",
-    chip: "bg-blue-50 text-blue-700 border-blue-200",
-    overlay: "bg-white/95 text-blue-700 border-blue-200",
+    badge: "bg-blue-500",
   },
 };
 
 type CategoryMeta = {
   icon: ComponentType<IconProps>;
-  /** พื้นทึบ + ตัวอักษรขาว — ใช้บน Carousel */
   solid: string;
-  /** พื้นจาง + ตัวอักษรสีหมวด — ใช้เป็น chip ในการ์ดและพื้นรูปสำรอง */
   chip: string;
-  /** ไล่เฉดสำหรับการ์ดเด่นที่ไม่มีรูป */
   panel: string;
 };
 
@@ -222,7 +213,6 @@ const CATEGORY_META: Record<string, CategoryMeta> = {
     panel:
       "bg-linear-to-br from-danger-dark/15 to-danger-dark/5 text-danger-dark",
   },
-  // รวมการผลิต + โลจิสติกส์ ใช้สีฟ้าของเดิมฝั่งโลจิสติกส์ให้แยกจากหมวดเขียว
   การดำเนินงาน: {
     icon: FactoryIcon,
     solid: "bg-blue-500",
@@ -247,7 +237,6 @@ const FALLBACK_CATEGORY: CategoryMeta = {
 export const catMeta = (category: string): CategoryMeta =>
   CATEGORY_META[category] ?? FALLBACK_CATEGORY;
 
-/** เรียงข่าวใหม่สุดขึ้นก่อน — แปลงเป็น timestamp ไม่ให้ขึ้นกับรูปแบบสตริง */
 export const sortNews = (list: NewsItem[]): NewsItem[] =>
   [...list].sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),

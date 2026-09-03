@@ -5,17 +5,21 @@ import Image from "next/image";
 import clsx from "clsx";
 import { formatThaiShortDate } from "@/lib/datetime";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/ui/icons";
-import { catMeta, NEWS_ITEMS, PRIORITY_CONFIG, sortNews } from "../data";
+import {
+  catMeta,
+  NEWS_ITEMS,
+  PRIORITY_BADGE,
+  PRIORITY_CONFIG,
+  sortNews,
+} from "../data";
 
-// สไลด์มาจากข่าวที่ Admin ปักหมุดไว้และมีรูป — ไม่ได้เก็บข้อมูลซ้ำอีกชุด
 const SLIDES = sortNews(NEWS_ITEMS.filter((item) => item.pinned && item.img));
 const TOTAL = SLIDES.length;
 
 export default function Carousel() {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
- 
-  // นับใหม่ทุกครั้งที่เปลี่ยนสไลด์ กดลูกศรเองแล้วจะได้เวลาเต็ม 5 วิ
+
   useEffect(() => {
     if (paused || TOTAL < 2) return;
 
@@ -52,7 +56,6 @@ export default function Carousel() {
             priority={i === 0}
             className="object-cover object-center"
           />
-          {/* ไล่เฉดดำจากล่างขึ้นบน ให้ตัวหนังสือขาวอ่านออกทุกรูป */}
           <div className="absolute inset-0 bg-linear-to-t from-black/78 via-black/20 via-55% to-transparent" />
         </div>
       ))}
@@ -69,7 +72,7 @@ export default function Carousel() {
             {slide.category}
           </span>
           {slide.priority === "high" && (
-            <span className="rounded-full bg-danger-dark px-2 py-1 text-body-3 font-semibold text-white">
+            <span className={clsx(PRIORITY_BADGE, PRIORITY_CONFIG.high.badge)}>
               {PRIORITY_CONFIG.high.label}
             </span>
           )}

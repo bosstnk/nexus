@@ -5,13 +5,11 @@ import clsx from "clsx";
 import { CheckIcon, ChevronsUpDownIcon, MapPinIcon } from "@/components/ui/icons";
 import { useFactory } from "./FactoryProvider";
 
-/** ตัวสลับโรงงาน — ยัง mockup อยู่ เลือกแล้วเก็บใน state ฝั่ง client เท่านั้น */
 export default function FactorySwitcher() {
   const { factory, factories, selectFactory } = useFactory();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
-  // ปิดเมนูเมื่อคลิกนอกกล่องหรือกด Esc
   useEffect(() => {
     if (!open) return;
 

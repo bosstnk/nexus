@@ -3,7 +3,6 @@ import FactorySwitcher from "@/features/factory/components/FactorySwitcher";
 import NotificationBell from "@/features/notifications/components/NotificationBell";
 
 type TopBarProps = {
-  /** ชื่อหน้าภาษาไทย */
   titleTh: string;
 };
 
@@ -24,7 +23,6 @@ export default function TopBar({ titleTh }: TopBarProps) {
 
       <NotificationBell />
       <div className="h-8 w-px shrink-0 bg-neutral-200" />
-      {/* สลับโรงงาน — บริบทของทั้งระบบ */}
       <FactorySwitcher />
     </header>
   );

@@ -1,6 +1,5 @@
 import { formatThaiDate, greetingFor, hourInBangkok } from "@/lib/datetime";
 
-/** ตัวเลขสรุปมุมขวา — ยัง mockup อยู่ */
 const STATS = [
   {
     value: "5",

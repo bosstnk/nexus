@@ -28,23 +28,19 @@ export default function NewsSection() {
       : NEWS_ITEMS.filter((item) => item.priority === filter);
   const sorted = sortNews(pool);
 
-  // สามข่าวล่าสุดขึ้นการ์ดใหญ่ ที่เหลือไหลลงเป็นแถวให้กวาดตาอ่านเร็ว
   const featured = sorted.slice(0, 3);
   const list = sorted.slice(3);
 
   return (
     <section>
-      <div className="mb-3.5 flex items-center justify-between gap-3">
+      <div className="mb-4 flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-body-1 font-medium text-neutral-900">
+          <h2 className="text-h5 font-medium text-neutral-900">
             ข่าวสารและประกาศ
           </h2>
-          <p className="text-body-3 text-neutral-500">
-            เรียงตามวันที่ล่าสุด · {sorted.length} รายการ
-          </p>
         </div>
 
-        <div className="flex shrink-0 gap-1.5">
+        <div className="flex shrink-0 gap-1">
           {FILTERS.map((option) => {
             const isActive = option.id === filter;
             return (
@@ -54,7 +50,7 @@ export default function NewsSection() {
                 onClick={() => setFilter(option.id)}
                 aria-pressed={isActive}
                 className={clsx(
-                  "inline-flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1 text-body-3 transition-colors",
+                  "inline-flex cursor-pointer items-center gap-1 rounded-full border px-3 py-1 text-body-3 transition-colors",
                   isActive
                     ? "border-green-400 bg-green-50 font-semibold text-green-700"
                     : "border-neutral-300 bg-white text-neutral-600 hover:bg-neutral-50",
@@ -63,7 +59,7 @@ export default function NewsSection() {
                 {option.label}
                 <span
                   className={clsx(
-                    "font-eng text-[10px]",
+                    "text-body-3",
                     isActive ? "text-green-600" : "text-neutral-500",
                   )}
                 >
