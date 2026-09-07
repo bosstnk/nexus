@@ -323,6 +323,74 @@ export function ShieldAlertIcon(props: IconProps) {
 
 /* ── หมวดข่าว (Lucide) ────────────────────────────────────── */
 
+/* ── ทะเบียนคู่ค้า (Lucide) ───────────────────────────────── */
+
+export function SearchIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="11" cy="11" r="8" />
+      <path d="m21 21-4.3-4.3" />
+    </Icon>
+  );
+}
+
+export function XIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M18 6 6 18" />
+      <path d="m6 6 12 12" />
+    </Icon>
+  );
+}
+
+export function PlusIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M5 12h14" />
+      <path d="M12 5v14" />
+    </Icon>
+  );
+}
+
+export function InfoIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 16v-4" />
+      <path d="M12 8h.01" />
+    </Icon>
+  );
+}
+
+export function ArrowDownLeftIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M17 7 7 17" />
+      <path d="M17 17H7V7" />
+    </Icon>
+  );
+}
+
+export function ArrowUpRightIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M7 7h10v10" />
+      <path d="M7 17 17 7" />
+    </Icon>
+  );
+}
+
+export function RepeatIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="m17 2 4 4-4 4" />
+      <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+      <path d="m7 22-4-4 4-4" />
+      <path d="M21 13v1a4 4 0 0 1-4 4H3" />
+    </Icon>
+  );
+}
+
 export function ConstructionIcon(props: IconProps) {
   return (
     <Icon {...props}>
