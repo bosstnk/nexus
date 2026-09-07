@@ -1,17 +1,10 @@
 import Link from "next/link";
-import AuthLayout from "../components/AuthLayout";
-import LoginForm from "./LoginForm";
+import AuthLayout from "@/features/auth/components/AuthLayout";
+import LoginForm from "@/features/auth/components/LoginForm";
+import { greetingFor, hourInBangkok, TZ } from "@/lib/datetime";
 
 // The greeting depends on "now" — without this Next freezes it at build time.
 export const dynamic = "force-dynamic";
-
-const TZ = "Asia/Bangkok";
-
-function greetingFor(hour: number) {
-  if (hour < 12) return { th: "สวัสดีตอนเช้า", en: "Good morning" };
-  if (hour < 18) return { th: "สวัสดีตอนบ่าย", en: "Good afternoon" };
-  return { th: "สวัสดีตอนเย็น", en: "Good evening" };
-}
 
 export default function LoginPage() {
   const now = new Date();
@@ -25,8 +18,7 @@ export default function LoginPage() {
 
   // Pinning the timezone is what removes the hydration mismatch the old
   // client-side effect was working around.
-  const hour = Number(formatDateTime({ hour: "2-digit", hour12: false })) % 24;
-  const greeting = greetingFor(hour);
+  const greeting = greetingFor(hourInBangkok(now));
 
   return (
     <AuthLayout

@@ -152,6 +152,18 @@ body {
   }
 }
 
+/* Dropdown — เลื่อนลงพร้อม fade ตอนเปิดเมนู */
+@keyframes nexus-fade-slide {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ============================================================
    TYPOGRAPHY PRESETS — utility classes
    heading: weight 500 · body: weight 400

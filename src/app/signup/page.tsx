@@ -2,7 +2,7 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { Controller } from "react-hook-form";
-import AuthLayout from "../components/AuthLayout";
+import AuthLayout from "@/features/auth/components/AuthLayout";
 import {
   MailIcon,
   LockIcon,
@@ -10,13 +10,13 @@ import {
   CheckIcon,
   UserIcon,
   PhoneIcon,
-} from "../components/icons";
-import DatePicker from "../components/DatePicker";
-import Button from "../components/Button";
-import { useSignupForm, StrengthTone } from "../hooks/useSignupForm";
-import usePasswordVisibility from "../hooks/usePasswordVisibility";
-import FieldError from "../components/FieldError";
-import { inputBox } from "../components/formStyles";
+} from "@/components/ui/icons";
+import DatePicker from "@/components/ui/DatePicker";
+import Button from "@/components/ui/Button";
+import { useSignupForm, StrengthTone } from "@/features/auth/hooks/useSignupForm";
+import usePasswordVisibility from "@/features/auth/hooks/usePasswordVisibility";
+import FieldError from "@/components/ui/FieldError";
+import { inputBox } from "@/components/ui/formStyles";
 
 const TONE_CLASSES: Record<StrengthTone, { bar: string; text: string }> = {
   none: { bar: "bg-neutral-200", text: "text-neutral-400" },

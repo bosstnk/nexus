@@ -1,9 +1,9 @@
 "use client";
 
-import { MailIcon, LockIcon, EyeIcon } from "../components/icons";
-import Button from "../components/Button";
-import FieldError from "../components/FieldError";
-import { inputBox } from "../components/formStyles";
+import { MailIcon, LockIcon, EyeIcon } from "@/components/ui/icons";
+import Button from "@/components/ui/Button";
+import FieldError from "@/components/ui/FieldError";
+import { inputBox } from "@/components/ui/formStyles";
 import { useLoginForm } from "../hooks/useLoginForm";
 import usePasswordVisibility from "../hooks/usePasswordVisibility";
 

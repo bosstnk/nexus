@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { createClient } from "../lib/supabase/client";
-import { confirmRedirectTo, toThai } from "../lib/authErrors";
+import { createClient } from "@/lib/supabase/client";
+import { confirmRedirectTo, toThai } from "../authErrors";
 
 const COOLDOWN_SECONDS = 60;
 

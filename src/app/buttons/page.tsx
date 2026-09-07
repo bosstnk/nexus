@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import Button from "../components/Button"
+import Button from "@/components/ui/Button"
 
 /* ── demo icons ───────────────────────────────────────────── */
 const Plus = () => (

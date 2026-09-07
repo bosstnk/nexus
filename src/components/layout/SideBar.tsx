@@ -8,8 +8,8 @@ import {
   ClipboardListIcon,
   HandshakeIcon,
   SettingsIcon,
-} from "./icons";
-import SignOutButton from "./SignOutButton";
+} from "@/components/ui/icons";
+import SignOutButton from "@/features/auth/components/SignOutButton";
 
 const MENU = [
   { id: "home", icon: HomeIcon, label: "หน้าหลัก", href: "/" },
