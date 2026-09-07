@@ -45,9 +45,9 @@ export function useLoginForm() {
     }
 
     setRedirecting(true);
-    router.push("/home");
-    // The Router Cache may still hold the logged-out RSC payload for /home.
-    // refresh() re-renders it on the server with the cookies just written.
+    router.push("/");
+    // The Router Cache may still hold the logged-out RSC payload for the home
+    // page. refresh() re-renders it on the server with the cookies just written.
     router.refresh();
   });
 
