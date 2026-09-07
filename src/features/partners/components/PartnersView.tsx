@@ -4,6 +4,7 @@ import { useState } from "react";
 import clsx from "clsx";
 import Button from "@/components/ui/Button";
 import { HandshakeIcon, PlusIcon, SearchIcon } from "@/components/ui/icons";
+import PartnerDeleteModal from "./PartnerDeleteModal";
 import PartnerFormModal from "./PartnerFormModal";
 import PartnersTable from "./PartnersTable";
 import { PARTNERS, type Partner, type PartnerType } from "../data";
@@ -16,11 +17,17 @@ const TABS: { id: "all" | PartnerType; label: string }[] = [
   { id: "both", label: "ทั้งสอง" },
 ];
 
+type ModalState =
+  | { mode: "create" }
+  | { mode: "edit"; partner: Partner }
+  | { mode: "delete"; partner: Partner }
+  | null;
+
 export default function PartnersView() {
   const [partners, setPartners] = useState<Partner[]>(PARTNERS);
   const [typeFilter, setTypeFilter] = useState<"all" | PartnerType>("all");
   const [search, setSearch] = useState("");
-  const [isFormOpen, setFormOpen] = useState(false);
+  const [modal, setModal] = useState<ModalState>(null);
 
   const countOf = (id: "all" | PartnerType) =>
     id === "all"
@@ -35,8 +42,22 @@ export default function PartnersView() {
   });
 
   const handleSave = (values: PartnerForm) => {
-    setPartners((current) => [{ id: Date.now(), ...values }, ...current]);
-    setFormOpen(false);
+    setPartners((current) =>
+      modal?.mode === "edit"
+        ? current.map((partner) =>
+            partner.id === modal.partner.id ? { ...partner, ...values } : partner,
+          )
+        : [{ id: Date.now(), ...values }, ...current],
+    );
+    setModal(null);
+  };
+
+  const handleDelete = () => {
+    if (modal?.mode !== "delete") return;
+
+    const { id } = modal.partner;
+    setPartners((current) => current.filter((partner) => partner.id !== id));
+    setModal(null);
   };
 
   return (
@@ -100,18 +121,35 @@ export default function PartnersView() {
           />
         </label>
 
-        <Button size="small" className="ml-auto" onClick={() => setFormOpen(true)}>
+        <Button
+          size="small"
+          className="ml-auto"
+          onClick={() => setModal({ mode: "create" })}
+        >
           <PlusIcon size={14} />
           เพิ่มคู่ค้า
         </Button>
       </div>
 
-      <PartnersTable partners={visiblePartners} />
+      <PartnersTable
+        partners={visiblePartners}
+        onEdit={(partner) => setModal({ mode: "edit", partner })}
+        onDelete={(partner) => setModal({ mode: "delete", partner })}
+      />
 
-      {isFormOpen && (
+      {(modal?.mode === "create" || modal?.mode === "edit") && (
         <PartnerFormModal
+          initial={modal.mode === "edit" ? modal.partner : undefined}
           onSave={handleSave}
-          onClose={() => setFormOpen(false)}
+          onClose={() => setModal(null)}
+        />
+      )}
+
+      {modal?.mode === "delete" && (
+        <PartnerDeleteModal
+          partner={modal.partner}
+          onConfirm={handleDelete}
+          onClose={() => setModal(null)}
         />
       )}
     </>
