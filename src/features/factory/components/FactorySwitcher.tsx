@@ -1,14 +1,27 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useOptimistic, useRef, useState, useTransition } from "react";
 import clsx from "clsx";
 import { CheckIcon, ChevronsUpDownIcon, MapPinIcon } from "@/components/ui/icons";
-import { useFactory } from "./FactoryProvider";
+import { selectFactory } from "../actions";
+import type { Factory } from "../types";
 
-export default function FactorySwitcher() {
-  const { factory, factories, selectFactory } = useFactory();
+type FactorySwitcherProps = {
+  factory: Factory;
+  factories: Factory[];
+};
+
+export default function FactorySwitcher({
+  factory,
+  factories,
+}: FactorySwitcherProps) {
   const [open, setOpen] = useState(false);
+  const [, startTransition] = useTransition();
   const rootRef = useRef<HTMLDivElement>(null);
+
+  // server ใช้เวลา revalidate สักครู่ ระหว่างนั้นโชว์โรงงานที่เพิ่งกดไปก่อน
+  // พอข้อมูลจริงกลับมา React จะทิ้งค่านี้แล้วใช้ prop แทนเอง
+  const [shown, showOptimistic] = useOptimistic(factory);
 
   useEffect(() => {
     if (!open) return;
@@ -28,6 +41,16 @@ export default function FactorySwitcher() {
     };
   }, [open]);
 
+  const handleSelect = (item: Factory) => {
+    setOpen(false);
+    if (item.id === shown.id) return;
+
+    startTransition(async () => {
+      showOptimistic(item);
+      await selectFactory(item.id);
+    });
+  };
+
   return (
     <div ref={rootRef} className="relative shrink-0">
       <button
@@ -38,24 +61,24 @@ export default function FactorySwitcher() {
         className={clsx(
           "flex min-w-50 cursor-pointer items-center gap-3 rounded-lg border px-3 py-2 transition-colors",
           open
-            ? `${factory.soft} ${factory.softBorder}`
+            ? `${shown.soft} ${shown.softBorder}`
             : "border-neutral-300 bg-white hover:bg-neutral-50",
         )}
       >
         <span
           className={clsx(
             "grid size-8 shrink-0 place-items-center rounded-lg text-body-2 font-bold text-white",
-            factory.solid,
+            shown.solid,
           )}
         >
-          {factory.code}
+          {shown.code}
         </span>
         <span className="min-w-0 flex-1 text-left">
           <span className="block text-[10px] leading-tight font-semibold tracking-[0.06em] text-neutral-500">
             โรงงานปัจจุบัน
           </span>
           <span className="block truncate text-body-3 leading-[1.2] font-semibold text-neutral-900">
-            {factory.nameTh}
+            {shown.name}
           </span>
         </span>
         <ChevronsUpDownIcon size={16} className="text-neutral-500" />
@@ -77,17 +100,14 @@ export default function FactorySwitcher() {
           </div>
 
           {factories.map((item) => {
-            const isActive = item.id === factory.id;
+            const isActive = item.id === shown.id;
             return (
               <button
                 key={item.id}
                 type="button"
                 role="menuitemradio"
                 aria-checked={isActive}
-                onClick={() => {
-                  selectFactory(item.id);
-                  setOpen(false);
-                }}
+                onClick={() => handleSelect(item)}
                 className={clsx(
                   "flex w-full cursor-pointer items-center gap-3 border-l-[3px] px-4 py-3 text-left transition-colors",
                   isActive
@@ -105,11 +125,11 @@ export default function FactorySwitcher() {
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-body-3 leading-tight font-semibold text-neutral-900">
-                    {item.nameTh}
+                    {item.name}
                   </span>
                   <span className="flex items-center gap-1 truncate text-[10px] text-neutral-500">
                     <MapPinIcon size={9} className="shrink-0" />
-                    {item.location}
+                    {item.location ?? "—"}
                   </span>
                 </span>
                 {isActive && (

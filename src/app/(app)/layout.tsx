@@ -1,5 +1,4 @@
 import SideBar from "@/components/layout/SideBar";
-import { FactoryProvider } from "@/features/factory/components/FactoryProvider";
 import { requireUser } from "@/features/auth/currentUser";
 
 export default async function AppLayout({
@@ -13,11 +12,9 @@ export default async function AppLayout({
     <main className="flex h-screen overflow-hidden">
       <SideBar name={fullName} />
 
-      <FactoryProvider>
-        <section className="flex min-w-0 flex-1 flex-col bg-neutral-50">
-          {children}
-        </section>
-      </FactoryProvider>
+      <section className="flex min-w-0 flex-1 flex-col bg-neutral-50">
+        {children}
+      </section>
     </main>
   );
 }
