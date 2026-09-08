@@ -12,3 +12,12 @@ const inputInvalid =
 
 export const inputBox = (invalid?: unknown) =>
   clsx(baseInput, invalid ? inputInvalid : inputIdle);
+
+/* The Select trigger is a button that carries its own chevron as a flex child,
+   so both sides get the same 16px — matching where the suffix sits inside
+   inputBox fields. */
+const baseSelect =
+  "w-full cursor-pointer bg-white px-4 py-3 text-b1 text-neutral-900 outline-none border rounded-lg transition-colors";
+
+export const selectBox = (invalid?: unknown) =>
+  clsx(baseSelect, invalid ? inputInvalid : inputIdle);

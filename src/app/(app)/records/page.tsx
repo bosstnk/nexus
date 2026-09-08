@@ -1,14 +1,15 @@
-import PlaceholderView from "@/components/layout/PlaceholderView";
 import TopBar from "@/components/layout/TopBar";
 import { VIEW_META } from "@/components/layout/viewMeta";
-
-const meta = VIEW_META.records;
+import DataEntryView from "@/features/data-entry/components/DataEntryView";
 
 export default function RecordsPage() {
   return (
     <>
-      <TopBar titleTh={meta.titleTh} />
-      <PlaceholderView titleTh={meta.titleTh} titleEn={meta.titleEn} />
+      <TopBar titleTh={VIEW_META.records.titleTh} />
+
+      <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-6">
+        <DataEntryView />
+      </div>
     </>
   );
 }
