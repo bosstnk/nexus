@@ -2,7 +2,8 @@ import { formatThaiDate } from "@/lib/datetime";
 import FactorySwitcher from "@/features/factory/components/FactorySwitcher";
 import { getCurrentFactory } from "@/features/factory/currentFactory";
 import { getMyFactories } from "@/features/factory/queries";
-import NotificationBell from "@/features/notifications/components/NotificationBell";
+// ปิด feature แจ้งเตือนไว้ก่อน — ไฟล์ component ยังอยู่ที่
+// src/features/notifications/components/NotificationBell.tsx เปิดกลับได้ทันที
 
 type TopBarProps = {
   titleTh: string;
@@ -29,7 +30,6 @@ export default async function TopBar({ titleTh }: TopBarProps) {
         {dateStr}
       </span>
 
-      <NotificationBell />
       <div className="h-8 w-px shrink-0 bg-neutral-200" />
 
       {factory ? (

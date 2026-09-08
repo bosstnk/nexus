@@ -4,7 +4,7 @@ import { useState } from "react";
 import clsx from "clsx";
 import { InboxIcon } from "@/components/ui/icons";
 import NewsCard from "./NewsCard";
-import { NEWS_ITEMS, sortNews, type Priority } from "../data";
+import type { NewsItem, Priority } from "../types";
 
 const FILTERS: { id: "all" | Priority; label: string }[] = [
   { id: "all", label: "ทั้งหมด" },
@@ -14,19 +14,17 @@ const FILTERS: { id: "all" | Priority; label: string }[] = [
   { id: "info", label: "ข้อมูล" },
 ];
 
-const countOf = (id: "all" | Priority) =>
-  id === "all"
-    ? NEWS_ITEMS.length
-    : NEWS_ITEMS.filter((item) => item.priority === id).length;
-
-export default function NewsSection() {
+export default function NewsSection({ news }: { news: NewsItem[] }) {
   const [filter, setFilter] = useState<"all" | Priority>("all");
 
-  const pool =
-    filter === "all"
-      ? NEWS_ITEMS
-      : NEWS_ITEMS.filter((item) => item.priority === filter);
-  const sorted = sortNews(pool);
+  const countOf = (id: "all" | Priority) =>
+    id === "all"
+      ? news.length
+      : news.filter((item) => item.priority === id).length;
+
+  // DB เรียง published_at ใหม่ -> เก่ามาแล้ว และ filter ไม่เปลี่ยนลำดับ
+  const sorted =
+    filter === "all" ? news : news.filter((item) => item.priority === filter);
 
   const featured = sorted.slice(0, 3);
   const list = sorted.slice(3);
