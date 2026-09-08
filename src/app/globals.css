@@ -31,6 +31,18 @@
   --color-blue-800: #0e2870;
   --color-blue-900: #0a1c50;
 
+  /* Orange scale — Tangerine · Accent (★ orange-400) */
+  --color-orange-50: #fff4ed;
+  --color-orange-100: #ffe7d5;
+  --color-orange-200: #fcd9be;
+  --color-orange-300: #f0a46b;
+  --color-orange-400: #e07b3a;
+  --color-orange-500: #c26129;
+  --color-orange-600: #a04618;
+  --color-orange-700: #7c3411;
+  --color-orange-800: #58240b;
+  --color-orange-900: #391705;
+
   /* Neutral scale */
   --color-neutral-50: #f8f9fa;
   --color-neutral-100: #f1f3f5;
