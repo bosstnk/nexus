@@ -1,4 +1,8 @@
+"use client";
+
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import clsx from "clsx";
 import logo from "../../../public/images/Logo.png";
 import {
@@ -33,15 +37,14 @@ const MENU = [
 type SideBarProps = {
   name?: string;
   role?: string;
-  /** id ของเมนูที่กำลังเปิดอยู่ */
-  active?: string;
 };
 
 export default function SideBar({
   name = "User",
   role = "Member",
-  active = "home",
 }: SideBarProps) {
+  const pathname = usePathname();
+
   return (
     <aside className="flex min-h-screen w-64 shrink-0 flex-col border-r-[0.5px] border-neutral-300 bg-white">
       <div className="flex flex-col gap-1 border-b border-neutral-300 px-4 pt-5 pb-4">
@@ -51,9 +54,11 @@ export default function SideBar({
       <nav className="flex-1 space-y-1 p-2">
         {MENU.map((item) => {
           const Icon = item.icon;
-          const isActive = item.id === active;
+          // เทียบตรง ๆ ก่อน ไม่งั้น href "/" จะ active ทุกหน้า
+          const isActive =
+            pathname === item.href || pathname.startsWith(`${item.href}/`);
           return (
-            <a
+            <Link
               key={item.id}
               href={item.href}
               aria-current={isActive ? "page" : undefined}
@@ -77,7 +82,7 @@ export default function SideBar({
               >
                 {item.label}
               </span>
-            </a>
+            </Link>
           );
         })}
       </nav>

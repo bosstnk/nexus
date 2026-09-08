@@ -1,8 +1,18 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PROTECTED = ["/home"];
+// Allowlist, not a protected list: a new page is private by default, so
+// forgetting to register it here cannot expose it.
+const PUBLIC = [
+  "/login",
+  "/signup",
+  "/signup-success",
+  "/confirm-email",
+  "/auth",
+];
 const AUTH_ONLY = ["/login", "/signup"];
+
+const HOME = "/";
 
 const matches = (pathname: string, routes: string[]) =>
   routes.some((r) => pathname === r || pathname.startsWith(`${r}/`));
@@ -18,7 +28,7 @@ function redirectPreservingCookies(
 
   const redirect = NextResponse.redirect(url);
   // Carry over any Set-Cookie the refresh produced. A bare redirect drops them,
-  // which turns the /login <-> /home bounce into a redirect loop.
+  // which turns the /login <-> / bounce into a redirect loop.
   from.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
   return redirect;
 }
@@ -57,12 +67,12 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  if (!user && matches(pathname, PROTECTED)) {
+  if (!user && !matches(pathname, PUBLIC)) {
     return redirectPreservingCookies(request, supabaseResponse, "/login");
   }
 
   if (user && matches(pathname, AUTH_ONLY)) {
-    return redirectPreservingCookies(request, supabaseResponse, "/home");
+    return redirectPreservingCookies(request, supabaseResponse, HOME);
   }
 
   // Must be this exact object: when the token was refreshed, the rotated

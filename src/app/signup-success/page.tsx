@@ -90,7 +90,7 @@ export default async function SignupSuccessPage({
               <span>ได้รับการยืนยันเรียบร้อยแล้ว</span>
             </p>
 
-            <Link href="/home" className={ctaClass}>
+            <Link href="/" className={ctaClass}>
               เริ่มต้นใช้งาน
             </Link>
           </div>
