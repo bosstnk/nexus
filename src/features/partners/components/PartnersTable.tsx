@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { HandshakeIcon, PencilIcon, TrashIcon } from "@/components/ui/icons";
-import { formatTaxId, PARTNER_TYPES, type Partner } from "../data";
+import { formatTaxId, PARTNER_TYPES } from "../data";
+import type { Partner } from "../types";
 
 const HEAD_CELL =
   "px-4 py-2.5 text-left text-[10px] font-semibold tracking-[0.04em] whitespace-nowrap text-neutral-600 uppercase";

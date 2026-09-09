@@ -7,7 +7,10 @@ export const partnerSchema = z.object({
     .string({ error: "กรุณากรอกชื่อบริษัท" })
     .trim()
     .min(1, { error: "กรุณากรอกชื่อบริษัท" }),
-  type: z.enum(["buy", "sell", "both"], { error: "กรุณาเลือกประเภทคู่ค้า" }),
+  // ค่าต้องตรงกับ enum partner_type ใน DB
+  type: z.enum(["purchase", "sale", "both"], {
+    error: "กรุณาเลือกประเภทคู่ค้า",
+  }),
   taxId: z
     .string({ error: "กรุณากรอกเลขผู้เสียภาษี" })
     .trim()
