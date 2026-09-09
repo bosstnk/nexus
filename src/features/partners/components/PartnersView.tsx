@@ -1,19 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import clsx from "clsx";
 import Button from "@/components/ui/Button";
 import { HandshakeIcon, PlusIcon, SearchIcon } from "@/components/ui/icons";
 import PartnerDeleteModal from "./PartnerDeleteModal";
 import PartnerFormModal from "./PartnerFormModal";
 import PartnersTable from "./PartnersTable";
-import { PARTNERS, type Partner, type PartnerType } from "../data";
+import { savePartner, unlinkPartner } from "../actions";
+import type { Partner, PartnerType } from "../types";
 import type { PartnerForm } from "../schema";
 
 const TABS: { id: "all" | PartnerType; label: string }[] = [
   { id: "all", label: "ทั้งหมด" },
-  { id: "sell", label: "ผู้รับซื้อ" },
-  { id: "buy", label: "ผู้ขายให้เรา" },
+  { id: "sale", label: "ผู้รับซื้อ" },
+  { id: "purchase", label: "ผู้ขายให้เรา" },
   { id: "both", label: "ทั้งสอง" },
 ];
 
@@ -23,11 +24,17 @@ type ModalState =
   | { mode: "delete"; partner: Partner }
   | null;
 
-export default function PartnersView() {
-  const [partners, setPartners] = useState<Partner[]>(PARTNERS);
+export default function PartnersView({ partners }: { partners: Partner[] }) {
   const [typeFilter, setTypeFilter] = useState<"all" | PartnerType>("all");
   const [search, setSearch] = useState("");
   const [modal, setModal] = useState<ModalState>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [deleting, startDeleting] = useTransition();
+
+  const closeModal = () => {
+    setModal(null);
+    setFormError(null);
+  };
 
   const countOf = (id: "all" | PartnerType) =>
     id === "all"
@@ -41,23 +48,29 @@ export default function PartnersView() {
     return true;
   });
 
-  const handleSave = (values: PartnerForm) => {
-    setPartners((current) =>
-      modal?.mode === "edit"
-        ? current.map((partner) =>
-            partner.id === modal.partner.id ? { ...partner, ...values } : partner,
-          )
-        : [{ id: Date.now(), ...values }, ...current],
+  // await ไว้ให้ react-hook-form ตั้ง isSubmitting ระหว่างรอ server
+  const handleSave = async (values: PartnerForm) => {
+    setFormError(null);
+
+    const result = await savePartner(
+      values,
+      modal?.mode === "edit" ? modal.partner.id : undefined,
     );
-    setModal(null);
+
+    // สำเร็จแล้ว revalidatePath จะส่ง partners ชุดใหม่ลงมาเอง ไม่ต้องแก้ state
+    if (result.ok) closeModal();
+    else setFormError(result.message);
   };
 
   const handleDelete = () => {
     if (modal?.mode !== "delete") return;
-
     const { id } = modal.partner;
-    setPartners((current) => current.filter((partner) => partner.id !== id));
-    setModal(null);
+
+    startDeleting(async () => {
+      const result = await unlinkPartner(id);
+      if (result.ok) closeModal();
+      else setFormError(result.message);
+    });
   };
 
   return (
@@ -140,16 +153,19 @@ export default function PartnersView() {
       {(modal?.mode === "create" || modal?.mode === "edit") && (
         <PartnerFormModal
           initial={modal.mode === "edit" ? modal.partner : undefined}
+          error={formError}
           onSave={handleSave}
-          onClose={() => setModal(null)}
+          onClose={closeModal}
         />
       )}
 
       {modal?.mode === "delete" && (
         <PartnerDeleteModal
           partner={modal.partner}
+          error={formError}
+          pending={deleting}
           onConfirm={handleDelete}
-          onClose={() => setModal(null)}
+          onClose={closeModal}
         />
       )}
     </>

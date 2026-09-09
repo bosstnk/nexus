@@ -8,18 +8,21 @@ import Button from "@/components/ui/Button";
 import FieldError from "@/components/ui/FieldError";
 import { inputBox } from "@/components/ui/formStyles";
 import { HandshakeIcon, XIcon } from "@/components/ui/icons";
-import { PARTNER_TYPES, type Partner, type PartnerType } from "../data";
+import { PARTNER_TYPES } from "../data";
+import type { Partner, PartnerType } from "../types";
 import { partnerSchema, TAX_ID_LENGTH, type PartnerForm } from "../schema";
 
-const TYPE_ORDER: PartnerType[] = ["sell", "buy", "both"];
+const TYPE_ORDER: PartnerType[] = ["sale", "purchase", "both"];
 
 export default function PartnerFormModal({
   initial,
+  error,
   onSave,
   onClose,
 }: {
   initial?: Partner;
-  onSave: (values: PartnerForm) => void;
+  error?: string | null;
+  onSave: (values: PartnerForm) => Promise<void>;
   onClose: () => void;
 }) {
   const {
@@ -34,7 +37,7 @@ export default function PartnerFormModal({
     reValidateMode: "onChange",
     defaultValues: {
       name: initial?.name ?? "",
-      type: initial?.type ?? "sell",
+      type: initial?.type ?? "sale",
       taxId: initial?.taxId ?? "",
     },
   });
@@ -150,6 +153,15 @@ export default function PartnerFormModal({
             <FieldError message={errors.taxId?.message} />
           </div>
         </div>
+
+        {error && (
+          <p
+            role="alert"
+            className="mx-5 mb-4 rounded-lg border border-danger/30 bg-danger-light px-3 py-2 text-body-3 text-danger-dark"
+          >
+            {error}
+          </p>
+        )}
 
         <div className="flex shrink-0 justify-end gap-2 border-t border-neutral-300 px-5 py-4">
           <Button type="button" variant="outline" size="small" onClick={onClose}>

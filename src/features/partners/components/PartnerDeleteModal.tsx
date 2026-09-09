@@ -3,14 +3,18 @@
 import { useEffect } from "react";
 import Button from "@/components/ui/Button";
 import { TrashIcon } from "@/components/ui/icons";
-import type { Partner } from "../data";
+import type { Partner } from "../types";
 
 export default function PartnerDeleteModal({
   partner,
+  error,
+  pending,
   onConfirm,
   onClose,
 }: {
   partner: Partner;
+  error?: string | null;
+  pending?: boolean;
   onConfirm: () => void;
   onClose: () => void;
 }) {
@@ -46,12 +50,22 @@ export default function PartnerDeleteModal({
             ลบคู่ค้ารายนี้?
           </h2>
           <p className="text-body-3 text-neutral-600">
-            การกระทำนี้ไม่สามารถเรียกคืนได้
+            บริษัทจะถูกเอาออกจากทะเบียนของโรงงานนี้เท่านั้น
+            ข้อมูลบริษัทยังอยู่ในระบบ
           </p>
           <p className="w-full rounded-lg border border-neutral-300 bg-neutral-50 px-4 py-3 text-left text-body-2 font-medium text-neutral-900">
             {partner.name}
           </p>
         </div>
+
+        {error && (
+          <p
+            role="alert"
+            className="mx-6 mb-4 rounded-lg border border-danger/30 bg-danger-light px-3 py-2 text-body-3 text-danger-dark"
+          >
+            {error}
+          </p>
+        )}
 
         <div className="flex gap-2 border-t border-neutral-300 bg-neutral-50 px-6 py-4">
           <Button
@@ -63,7 +77,13 @@ export default function PartnerDeleteModal({
           >
             ยกเลิก
           </Button>
-          <Button variant="danger" size="small" block onClick={onConfirm}>
+          <Button
+            variant="danger"
+            size="small"
+            block
+            loading={pending}
+            onClick={onConfirm}
+          >
             <TrashIcon size={14} />
             ลบคู่ค้า
           </Button>

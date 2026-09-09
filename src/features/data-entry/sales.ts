@@ -6,7 +6,6 @@ import {
   ShoppingCartIcon,
   type IconProps,
 } from "@/components/ui/icons";
-import { PARTNERS } from "@/features/partners/data";
 
 export type SaleType = "buy" | "sell";
 
@@ -64,9 +63,22 @@ export const MATERIAL_OPTIONS = [
   "อื่นๆ",
 ];
 
-export const PARTNER_OPTIONS = PARTNERS.map((partner) => ({
-  value: partner.name,
-  label: partner.name,
+// TODO: ชั่วคราว — data-entry ยังไม่มีตารางใน DB จึงยังใช้รายชื่อสมมติ
+// เมื่อทำตาราง sales แล้วให้ดึงจาก getPartners(factoryId) ส่งลงมาเป็น prop แทน
+const MOCK_PARTNER_NAMES = [
+  "บริษัท รีไซเคิล ไทย จำกัด",
+  "บริษัท กรีน เมทัล จำกัด",
+  "บริษัท ไทย พลาสติก รีไซเคิล จำกัด",
+  "บริษัท ซันไรส์ เทรดดิ้ง จำกัด",
+  "บริษัท ยูไนเต็ด สแครป จำกัด",
+  "บริษัท โกลด์ เมทัล จำกัด",
+  "บริษัท อีสเทิร์น รีซอร์ส จำกัด",
+  "ห้างหุ้นส่วนจำกัด สมชายค้าของเก่า",
+];
+
+export const PARTNER_OPTIONS = MOCK_PARTNER_NAMES.map((name) => ({
+  value: name,
+  label: name,
 }));
 
 export const SALE_RECORDS: SaleRecord[] = [
