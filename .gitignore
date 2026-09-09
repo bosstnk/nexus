@@ -40,4 +40,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# supabase cli — cache เท่านั้น ส่วน config.toml / migrations ให้ track ตามปกติ
+supabase/.temp
+
+# schema dump ที่ export มาดูเฉย ๆ ไม่ใช่ migration และ drift ได้ง่าย
+# ตัวที่เป็นความจริงคือ src/lib/supabase/database.types.ts (generate จาก DB)
+schema
+
 docs

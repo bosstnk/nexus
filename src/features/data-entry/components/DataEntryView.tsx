@@ -5,7 +5,7 @@ import clsx from "clsx";
 import Button from "@/components/ui/Button";
 import { PlusIcon, type IconProps } from "@/components/ui/icons";
 import { formatThaiMonthYear, formatThaiShortDate } from "@/lib/datetime";
-import { useFactory } from "@/features/factory/components/FactoryProvider";
+import type { Factory } from "@/features/factory/types";
 import EntryDeleteModal from "./EntryDeleteModal";
 import EntryFormModal from "./EntryFormModal";
 import EntryTable from "./EntryTable";
@@ -60,8 +60,11 @@ const byMonthDesc = (a: EntryRecord, b: EntryRecord) =>
 const byDateDesc = (a: SaleRecord, b: SaleRecord) =>
   b.date.localeCompare(a.date);
 
-export default function DataEntryView() {
-  const { factory } = useFactory();
+export default function DataEntryView({ factory }: { factory: Factory }) {
+  // TODO: ชั่วคราว — ข้อมูลตัวอย่างยังใช้ "tst"/"btk" เป็น factoryId แต่ของจริง
+  // เป็น uuid จาก DB ทิ้งบรรทัดนี้ได้เมื่อย้าย records ขึ้น Supabase แล้ว
+  const factoryKey = factory.code.toLowerCase();
+
   const [tab, setTab] = useState<TabId>("electricity");
   const [records, setRecords] = useState<EntryRecord[]>(ENTRY_RECORDS);
   const [sales, setSales] = useState<SaleRecord[]>(SALE_RECORDS);
@@ -75,11 +78,11 @@ export default function DataEntryView() {
   const MetaIcon = meta.icon;
 
   const visibleRecords = records
-    .filter((record) => record.kind === tab && record.factoryId === factory.id)
+    .filter((record) => record.kind === tab && record.factoryId === factoryKey)
     .sort(byMonthDesc);
 
   const visibleSales = sales
-    .filter((record) => record.factoryId === factory.id)
+    .filter((record) => record.factoryId === factoryKey)
     .sort(byDateDesc);
 
   const rowCount = isSales ? visibleSales.length : visibleRecords.length;
@@ -88,7 +91,7 @@ export default function DataEntryView() {
     records.some(
       (record) =>
         record.kind === tab &&
-        record.factoryId === factory.id &&
+        record.factoryId === factoryKey &&
         record.year === year &&
         record.month === month,
     );
@@ -119,7 +122,7 @@ export default function DataEntryView() {
         (record) =>
           !(
             record.kind === tab &&
-            record.factoryId === factory.id &&
+            record.factoryId === factoryKey &&
             record.year === year &&
             record.month === month
           ),
@@ -129,7 +132,7 @@ export default function DataEntryView() {
         {
           id: Date.now(),
           kind: tab as EntryKind,
-          factoryId: factory.id,
+          factoryId: factoryKey,
           year,
           month,
           values,
@@ -161,7 +164,7 @@ export default function DataEntryView() {
         : [
             {
               id: Date.now(),
-              factoryId: factory.id,
+              factoryId: factoryKey,
               submittedBy: "สมชาย",
               ...values,
             },
@@ -230,7 +233,7 @@ export default function DataEntryView() {
         </span>
         <div className="min-w-0">
           <h2 className="text-body-1 font-medium text-neutral-900">
-            {meta.titleTh} · {factory.nameTh}
+            {meta.titleTh} · {factory.name}
           </h2>
           <p className="text-body-3 text-neutral-600">
             {rowCount} รายการ ·{" "}
@@ -270,7 +273,7 @@ export default function DataEntryView() {
           <MetaIcon size={32} className="text-neutral-400" />
           <div>
             <p className="text-body-2 text-neutral-600">
-              ยังไม่มีข้อมูล{meta.titleTh}ของ{factory.nameTh}
+              ยังไม่มีข้อมูล{meta.titleTh}ของ{factory.name}
             </p>
             <p className="text-body-3 text-neutral-500">
               กด “เพิ่มข้อมูล” เพื่อบันทึกรายการแรก

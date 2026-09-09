@@ -16,7 +16,7 @@ export const requireUser = cache(async () => {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("first_name, last_name")
+    .select("first_name, last_name, phone, avatar_url")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -24,5 +24,5 @@ export const requireUser = cache(async () => {
     [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") ||
     undefined;
 
-  return { user, fullName };
+  return { user, profile, fullName, avatarUrl: profile?.avatar_url ?? null };
 });

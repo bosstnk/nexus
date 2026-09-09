@@ -5,31 +5,29 @@ import Image from "next/image";
 import clsx from "clsx";
 import { formatThaiShortDate } from "@/lib/datetime";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/ui/icons";
-import {
-  catMeta,
-  NEWS_ITEMS,
-  PRIORITY_BADGE,
-  PRIORITY_CONFIG,
-  sortNews,
-} from "../data";
+import { catMeta, PRIORITY_BADGE, PRIORITY_CONFIG } from "../data";
+import type { NewsItem } from "../types";
 
-const SLIDES = sortNews(NEWS_ITEMS.filter((item) => item.pinned && item.img));
-const TOTAL = SLIDES.length;
-
-export default function Carousel() {
+export default function Carousel({ news }: { news: NewsItem[] }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
 
+  // ข่าวเรียงใหม่ -> เก่ามาจาก DB แล้ว filter รักษาลำดับเดิมไว้
+  const slides = news.filter((item) => item.pinned && item.img);
+  const total = slides.length;
+
   useEffect(() => {
-    if (paused || TOTAL < 2) return;
+    if (paused || total < 2) return;
 
-    const timer = setTimeout(() => setIndex((i) => (i + 1) % TOTAL), 5000);
+    const timer = setTimeout(() => setIndex((i) => (i + 1) % total), 5000);
     return () => clearTimeout(timer);
-  }, [index, paused]);
+  }, [index, paused, total]);
 
-  if (!TOTAL) return null;
+  // hooks ต้องรันครบทุกรอบ จึงเช็คว่างทีหลัง
+  if (!total) return null;
 
-  const slide = SLIDES[index];
+  // ถ้าจำนวนสไลด์ลดลงหลัง revalidate index เดิมอาจเกินขอบ
+  const slide = slides[index % total];
   const meta = catMeta(slide.category);
   const CategoryIcon = meta.icon;
 
@@ -39,7 +37,7 @@ export default function Carousel() {
       onMouseLeave={() => setPaused(false)}
       className="relative h-75 shrink-0 overflow-hidden rounded-xl border border-neutral-300"
     >
-      {SLIDES.map((item, i) => (
+      {slides.map((item, i) => (
         <div
           key={item.id}
           aria-hidden={i !== index}
@@ -91,7 +89,7 @@ export default function Carousel() {
 
       <button
         type="button"
-        onClick={() => setIndex((i) => (i - 1 + TOTAL) % TOTAL)}
+        onClick={() => setIndex((i) => (i - 1 + total) % total)}
         aria-label="สไลด์ก่อนหน้า"
         className="absolute top-1/2 left-3 grid size-8 -translate-y-1/2 cursor-pointer place-items-center rounded-full bg-white/20 text-white backdrop-blur-xs transition-colors hover:bg-white/35"
       >
@@ -99,7 +97,7 @@ export default function Carousel() {
       </button>
       <button
         type="button"
-        onClick={() => setIndex((i) => (i + 1) % TOTAL)}
+        onClick={() => setIndex((i) => (i + 1) % total)}
         aria-label="สไลด์ถัดไป"
         className="absolute top-1/2 right-3 grid size-8 -translate-y-1/2 cursor-pointer place-items-center rounded-full bg-white/20 text-white backdrop-blur-xs transition-colors hover:bg-white/35"
       >
@@ -107,7 +105,7 @@ export default function Carousel() {
       </button>
 
       <div className="absolute right-6 bottom-5 flex items-center gap-1">
-        {SLIDES.map((item, i) => (
+        {slides.map((item, i) => (
           <button
             key={item.id}
             type="button"

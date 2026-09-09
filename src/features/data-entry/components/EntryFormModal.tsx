@@ -10,7 +10,7 @@ import Select from "@/components/ui/Select";
 import { inputBox } from "@/components/ui/formStyles";
 import { AlertTriangleIcon, XIcon } from "@/components/ui/icons";
 import { thaiMonthNames } from "@/lib/datetime";
-import type { Factory } from "@/features/factory/factories";
+import type { Factory } from "@/features/factory/types";
 import { YEARS, type EntryRecord } from "../data";
 import {
   buildEntryFormSchema,
@@ -142,7 +142,7 @@ export default function EntryFormModal({
                 {factory.code}
               </span>
               <span className="flex-1 text-body-3 font-semibold">
-                {factory.nameTh}
+                {factory.name}
               </span>
               <span className="text-[10px] text-neutral-500">
                 กำหนดจากตัวสลับโรงงานด้านบน

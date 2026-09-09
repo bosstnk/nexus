@@ -2,12 +2,8 @@ import Image from "next/image";
 import clsx from "clsx";
 import { formatThaiShortDate } from "@/lib/datetime";
 import { UserIcon } from "@/components/ui/icons";
-import {
-  catMeta,
-  PRIORITY_BADGE,
-  PRIORITY_CONFIG,
-  type NewsItem,
-} from "../data";
+import { catMeta, PRIORITY_BADGE, PRIORITY_CONFIG } from "../data";
+import type { NewsItem } from "../types";
 
 const CARD =
   "group cursor-pointer rounded-xl border border-neutral-300 bg-white shadow-xs transition hover:shadow-md";
