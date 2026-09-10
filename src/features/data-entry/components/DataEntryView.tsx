@@ -1,37 +1,39 @@
 "use client";
 
-import { useState, type ComponentType } from "react";
+import { useState, useTransition, type ComponentType } from "react";
 import clsx from "clsx";
 import Button from "@/components/ui/Button";
 import { PlusIcon, type IconProps } from "@/components/ui/icons";
 import { formatThaiMonthYear, formatThaiShortDate } from "@/lib/datetime";
 import type { Factory } from "@/features/factory/types";
+import type { Partner } from "@/features/partners/types";
 import EntryDeleteModal from "./EntryDeleteModal";
 import EntryFormModal from "./EntryFormModal";
 import EntryTable from "./EntryTable";
 import SalesFormModal from "./SalesFormModal";
 import SalesTable from "./SalesTable";
-import { ENTRY_RECORDS, type EntryKind, type EntryRecord } from "../data";
 import {
-  ENTRY_KINDS,
-  ENTRY_SCHEMAS,
-  type EntryFormValues,
-} from "../schemas";
-import {
-  SALES_META,
-  SALE_RECORDS,
-  SALE_TYPES,
-  type SaleRecord,
-  type SalesFormValues,
-} from "../sales";
+  deleteTransaction,
+  deleteUtilityReport,
+  saveTransaction,
+  saveUtilityReport,
+} from "../actions";
+import { ENTRY_KINDS, ENTRY_SCHEMAS, type EntryFormValues } from "../schemas";
+import { SALES_META, SALE_TYPES, type SalesFormValues } from "../sales";
+import type {
+  EntryKind,
+  EntryRecord,
+  Material,
+  Transaction,
+} from "../types";
 
 type TabId = EntryKind | "sales";
 
 type ModalState =
   | { mode: "create" }
   | { mode: "edit"; record: EntryRecord }
-  | { mode: "edit-sale"; record: SaleRecord }
-  | { mode: "delete"; detail: string; onConfirm: () => void }
+  | { mode: "edit-sale"; record: Transaction }
+  | { mode: "delete"; detail: string; run: () => Promise<void> }
   | null;
 
 const TABS: {
@@ -57,18 +59,28 @@ const TABS: {
 const byMonthDesc = (a: EntryRecord, b: EntryRecord) =>
   b.year - a.year || b.month - a.month;
 
-const byDateDesc = (a: SaleRecord, b: SaleRecord) =>
-  b.date.localeCompare(a.date);
-
-export default function DataEntryView({ factory }: { factory: Factory }) {
-  // TODO: ชั่วคราว — ข้อมูลตัวอย่างยังใช้ "tst"/"btk" เป็น factoryId แต่ของจริง
-  // เป็น uuid จาก DB ทิ้งบรรทัดนี้ได้เมื่อย้าย records ขึ้น Supabase แล้ว
-  const factoryKey = factory.code.toLowerCase();
-
+export default function DataEntryView({
+  factory,
+  records,
+  transactions,
+  partners,
+  materials,
+}: {
+  factory: Factory;
+  records: EntryRecord[];
+  transactions: Transaction[];
+  partners: Partner[];
+  materials: Material[];
+}) {
   const [tab, setTab] = useState<TabId>("electricity");
-  const [records, setRecords] = useState<EntryRecord[]>(ENTRY_RECORDS);
-  const [sales, setSales] = useState<SaleRecord[]>(SALE_RECORDS);
   const [modal, setModal] = useState<ModalState>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [deleting, startDeleting] = useTransition();
+
+  const closeModal = () => {
+    setModal(null);
+    setError(null);
+  };
 
   const isSales = tab === "sales";
   const schema = isSales ? null : ENTRY_SCHEMAS[tab as EntryKind];
@@ -77,121 +89,83 @@ export default function DataEntryView({ factory }: { factory: Factory }) {
     : { titleTh: schema!.titleTh, icon: schema!.icon, tile: schema!.tile };
   const MetaIcon = meta.icon;
 
+  // query กรอง factory_id มาแล้ว เหลือแค่แยกตามแท็บที่กำลังดู
   const visibleRecords = records
-    .filter((record) => record.kind === tab && record.factoryId === factoryKey)
+    .filter((record) => record.kind === tab)
     .sort(byMonthDesc);
 
-  const visibleSales = sales
-    .filter((record) => record.factoryId === factoryKey)
-    .sort(byDateDesc);
-
-  const rowCount = isSales ? visibleSales.length : visibleRecords.length;
+  const rowCount = isSales ? transactions.length : visibleRecords.length;
 
   const hasMonth = (year: number, month: number) =>
     records.some(
       (record) =>
-        record.kind === tab &&
-        record.factoryId === factoryKey &&
-        record.year === year &&
-        record.month === month,
+        record.kind === tab && record.year === year && record.month === month,
     );
 
-  const handleSaveEntry = (form: EntryFormValues) => {
+  const handleSaveEntry = async (form: EntryFormValues) => {
     if (!schema) return;
+    setError(null);
 
-    const year = Number(form.year);
-    const month = Number(form.month);
-    const values = Object.fromEntries(
-      schema.metrics.map((metric) => [
-        metric.key,
-        Number(form.values[metric.key]),
-      ]),
-    );
-    const submittedAt = new Date().toISOString().slice(0, 10);
-
-    setRecords((current) => {
-      if (modal?.mode === "edit") {
-        return current.map((record) =>
-          record.id === modal.record.id
-            ? { ...record, year, month, values, submittedAt }
-            : record,
-        );
-      }
-
-      const withoutSameMonth = current.filter(
-        (record) =>
-          !(
-            record.kind === tab &&
-            record.factoryId === factoryKey &&
-            record.year === year &&
-            record.month === month
-          ),
-      );
-
-      return [
-        {
-          id: Date.now(),
-          kind: tab as EntryKind,
-          factoryId: factoryKey,
-          year,
-          month,
-          values,
-          submittedBy: "สมชาย",
-          submittedAt,
-        },
-        ...withoutSameMonth,
-      ];
-    });
-
-    setModal(null);
-  };
-
-  const handleSaveSale = (form: SalesFormValues) => {
-    const values = {
-      type: form.type,
-      date: form.date,
-      partner: form.partner,
-      materials: form.materials,
-      weight: Number(form.weight),
-      amount: Number(form.amount),
-    };
-
-    setSales((current) =>
-      modal?.mode === "edit-sale"
-        ? current.map((record) =>
-            record.id === modal.record.id ? { ...record, ...values } : record,
-          )
-        : [
-            {
-              id: Date.now(),
-              factoryId: factoryKey,
-              submittedBy: "สมชาย",
-              ...values,
-            },
-            ...current,
-          ],
+    const result = await saveUtilityReport(
+      {
+        kind: tab as EntryKind,
+        year: Number(form.year),
+        month: Number(form.month),
+        values: Object.fromEntries(
+          schema.metrics.map((metric) => [
+            metric.key,
+            Number(form.values[metric.key]),
+          ]),
+        ),
+      },
+      modal?.mode === "edit" ? modal.record.id : undefined,
     );
 
-    setModal(null);
+    if (result.ok) closeModal();
+    else setError(result.message);
   };
+
+  const handleSaveSale = async (form: SalesFormValues) => {
+    setError(null);
+
+    const result = await saveTransaction(
+      {
+        type: form.type,
+        date: form.date,
+        partnerId: form.partnerId,
+        materialId: form.materialId,
+        weightKg: Number(form.weight),
+        amount: Number(form.amount),
+      },
+      modal?.mode === "edit-sale" ? modal.record.id : undefined,
+    );
+
+    if (result.ok) closeModal();
+    else setError(result.message);
+  };
+
+  const confirmDelete = (detail: string, run: () => Promise<void>) =>
+    setModal({ mode: "delete", detail, run });
 
   const askDeleteEntry = (record: EntryRecord) =>
-    setModal({
-      mode: "delete",
-      detail: `${ENTRY_SCHEMAS[record.kind].titleTh} · ${formatThaiMonthYear(record.year, record.month)}`,
-      onConfirm: () =>
-        setRecords((current) =>
-          current.filter((item) => item.id !== record.id),
-        ),
-    });
+    confirmDelete(
+      `${ENTRY_SCHEMAS[record.kind].titleTh} · ${formatThaiMonthYear(record.year, record.month)}`,
+      async () => {
+        const result = await deleteUtilityReport(record.kind, record.id);
+        if (result.ok) closeModal();
+        else setError(result.message);
+      },
+    );
 
-  const askDeleteSale = (record: SaleRecord) =>
-    setModal({
-      mode: "delete",
-      detail: `${SALE_TYPES[record.type].th} · ${record.partner} · ${formatThaiShortDate(record.date)}`,
-      onConfirm: () =>
-        setSales((current) => current.filter((item) => item.id !== record.id)),
-    });
+  const askDeleteSale = (record: Transaction) =>
+    confirmDelete(
+      `${SALE_TYPES[record.type].th} · ${record.partnerName} · ${formatThaiShortDate(record.date)}`,
+      async () => {
+        const result = await deleteTransaction(record.id);
+        if (result.ok) closeModal();
+        else setError(result.message);
+      },
+    );
 
   return (
     <>
@@ -256,7 +230,7 @@ export default function DataEntryView({ factory }: { factory: Factory }) {
       {rowCount > 0 ? (
         isSales ? (
           <SalesTable
-            records={visibleSales}
+            records={transactions}
             onEdit={(record) => setModal({ mode: "edit-sale", record })}
             onDelete={askDeleteSale}
           />
@@ -288,28 +262,31 @@ export default function DataEntryView({ factory }: { factory: Factory }) {
           factory={factory}
           initial={modal.mode === "edit" ? modal.record : undefined}
           duplicateOf={hasMonth}
+          error={error}
           onSave={handleSaveEntry}
-          onClose={() => setModal(null)}
+          onClose={closeModal}
         />
       )}
 
       {isSales && (modal?.mode === "create" || modal?.mode === "edit-sale") && (
         <SalesFormModal
           factory={factory}
+          partners={partners}
+          materials={materials}
           initial={modal.mode === "edit-sale" ? modal.record : undefined}
+          error={error}
           onSave={handleSaveSale}
-          onClose={() => setModal(null)}
+          onClose={closeModal}
         />
       )}
 
       {modal?.mode === "delete" && (
         <EntryDeleteModal
           detail={modal.detail}
-          onConfirm={() => {
-            modal.onConfirm();
-            setModal(null);
-          }}
-          onClose={() => setModal(null)}
+          error={error}
+          pending={deleting}
+          onConfirm={() => startDeleting(modal.run)}
+          onClose={closeModal}
         />
       )}
     </>

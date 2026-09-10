@@ -9,7 +9,8 @@ import {
   NUMERIC_CELL,
   sumWeights,
 } from "./tableStyles";
-import { SALE_TYPES, type SaleRecord } from "../sales";
+import { SALE_TYPES } from "../sales";
+import type { Transaction } from "../types";
 
 const WEIGHTS = [1, 1, 3, 2, 1, 1, 1];
 const TOTAL_WEIGHT = sumWeights(WEIGHTS);
@@ -19,9 +20,9 @@ export default function SalesTable({
   onEdit,
   onDelete,
 }: {
-  records: SaleRecord[];
-  onEdit: (record: SaleRecord) => void;
-  onDelete: (record: SaleRecord) => void;
+  records: Transaction[];
+  onEdit: (record: Transaction) => void;
+  onDelete: (record: Transaction) => void;
 }) {
   return (
     <div className="overflow-x-auto rounded-xl border border-neutral-300 bg-white">
@@ -39,7 +40,7 @@ export default function SalesTable({
             <th className={HEAD_CELL}>วันที่</th>
             <th className={HEAD_CELL}>คู่ค้า</th>
             <th className={HEAD_CELL}>วัสดุ</th>
-            <th className={HEAD_CELL}>น้ำหนักรวม (ตัน)</th>
+            <th className={HEAD_CELL}>น้ำหนักรวม (kg)</th>
             <th className={HEAD_CELL}>จำนวนเงิน (฿)</th>
             <th className={HEAD_CELL}>บันทึกโดย</th>
             <th className={HEAD_CELL}>
@@ -52,9 +53,6 @@ export default function SalesTable({
           {records.map((record, i) => {
             const type = SALE_TYPES[record.type];
             const TypeIcon = type.icon;
-            const shown = record.materials.slice(0, 2);
-            const rest = record.materials.length - shown.length;
-
             return (
               <tr
                 key={record.id}
@@ -78,37 +76,30 @@ export default function SalesTable({
                 <td className={NUMERIC_CELL}>
                   {formatThaiShortDate(record.date)}
                 </td>
-                <td className={CELL} title={record.partner}>
-                  {record.partner}
+                <td className={CELL} title={record.partnerName}>
+                  {record.partnerName}
                 </td>
 
                 <td className={clsx(CELL, "overflow-hidden")}>
                   <span className="flex items-center gap-1">
-                    {shown.map((material) => (
-                      <span
-                        key={material}
-                        className="truncate rounded-full bg-neutral-100 px-2 py-0.5 text-body-3 text-neutral-600"
-                      >
-                        {material}
-                      </span>
-                    ))}
-                    {rest > 0 && (
-                      <span className="shrink-0 text-body-3 text-neutral-500">
-                        +{rest}
-                      </span>
-                    )}
+                    <span className="truncate rounded-full bg-neutral-100 px-2 py-0.5 text-body-3 text-neutral-600">
+                      {record.materialName}
+                    </span>
                   </span>
                 </td>
 
-                <td className={NUMERIC_CELL}>{record.weight.toFixed(1)}</td>
+                <td className={NUMERIC_CELL}>
+                  {record.weightKg.toLocaleString("en-US")}
+                </td>
                 <td className={NUMERIC_CELL}>
                   ฿{record.amount.toLocaleString("en-US")}
                 </td>
-                <td className={CELL}>{record.submittedBy}</td>
+                <td className={CELL}>{record.createdBy}</td>
 
                 <td className="px-4 py-3">
                   <RowActions
-                    label={`${type.th} ${record.partner}`}
+                    label={`${type.th} ${record.partnerName}`}
+                    canEdit={record.canEdit}
                     onEdit={() => onEdit(record)}
                     onDelete={() => onDelete(record)}
                   />

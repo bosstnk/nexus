@@ -6,10 +6,14 @@ import { TrashIcon } from "@/components/ui/icons";
 
 export default function EntryDeleteModal({
   detail,
+  error,
+  pending,
   onConfirm,
   onClose,
 }: {
   detail: string;
+  error?: string | null;
+  pending?: boolean;
   onConfirm: () => void;
   onClose: () => void;
 }) {
@@ -52,6 +56,15 @@ export default function EntryDeleteModal({
           </p>
         </div>
 
+        {error && (
+          <p
+            role="alert"
+            className="mx-6 mb-4 rounded-lg border border-danger/30 bg-danger-light px-3 py-2 text-body-3 text-danger-dark"
+          >
+            {error}
+          </p>
+        )}
+
         <div className="flex gap-2 border-t border-neutral-300 bg-neutral-50 px-6 py-4">
           <Button
             variant="outline"
@@ -62,7 +75,13 @@ export default function EntryDeleteModal({
           >
             ยกเลิก
           </Button>
-          <Button variant="danger" size="small" block onClick={onConfirm}>
+          <Button
+            variant="danger"
+            size="small"
+            block
+            loading={pending}
+            onClick={onConfirm}
+          >
             <TrashIcon size={14} />
             ลบข้อมูล
           </Button>

@@ -6,7 +6,7 @@ import {
   ZapIcon,
   type IconProps,
 } from "@/components/ui/icons";
-import type { EntryKind } from "./data";
+import type { EntryKind } from "./types";
 
 export type MetricField = {
   key: string;
@@ -40,7 +40,7 @@ export const ENTRY_SCHEMAS: Record<EntryKind, EntrySchema> = {
     accent: "text-warning-dark",
     metrics: [
       {
-        key: "kwh",
+        key: "consumption_kwh",
         labelTh: "ปริมาณการใช้ไฟฟ้า",
         labelEn: "Usage",
         placeholder: "เช่น 48200",
@@ -67,11 +67,11 @@ export const ENTRY_SCHEMAS: Record<EntryKind, EntrySchema> = {
     accent: "text-blue-600",
     metrics: [
       {
-        key: "kg",
+        key: "consumption_m3",
         labelTh: "ปริมาณการใช้น้ำ",
         labelEn: "Usage",
         placeholder: "เช่น 3200",
-        suffix: "kg",
+        suffix: "m³",
         min: 1,
       },
       {
