@@ -52,8 +52,8 @@ export default function SignupPage() {
           <span className="opacity-50">· Welcome</span>
         </>
       }
-      headline="ร่วมสร้างสิ่งที่ยั่งยืนไปด้วยกัน — ตั้งแต่วันนี้"
-      description="Be Part of the Change Join us in building a more sustainable future."
+      headline="ร่วมเป็นส่วนหนึ่งของทีม ก้าวไปข้างหน้าไปด้วยกัน"
+      description="Connect with your team, access the information you need, and move forward together."
     >
       <div className="flex min-h-screen flex-col gap-10 p-20">
         {/* Cross-link to login */}

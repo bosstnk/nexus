@@ -7,17 +7,14 @@ import clsx from "clsx";
 import logo from "../../../public/images/Logo.png";
 import {
   HomeIcon,
-  NewspaperIcon,
   LayoutDashboardIcon,
   ClipboardListIcon,
   HandshakeIcon,
-  SettingsIcon,
 } from "@/components/ui/icons";
 import SignOutButton from "@/features/auth/components/SignOutButton";
 
 const MENU = [
   { id: "home", icon: HomeIcon, label: "หน้าหลัก", href: "/" },
-  { id: "news", icon: NewspaperIcon, label: "ข่าวสาร", href: "/news" },
   {
     id: "dashboard",
     icon: LayoutDashboardIcon,
@@ -31,7 +28,6 @@ const MENU = [
     href: "/records",
   },
   { id: "partners", icon: HandshakeIcon, label: "คู่ค้า", href: "/partners" },
-  { id: "settings", icon: SettingsIcon, label: "ตั้งค่า", href: "/settings" },
 ];
 
 type SideBarProps = {
