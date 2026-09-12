@@ -56,13 +56,16 @@ export function formatThaiMonthYear(year: number, month: number) {
 }
 
 export function hourInBangkok(date: Date) {
-  return (
-    Number(
-      date.toLocaleDateString("en-US", {
-        hour: "2-digit",
-        hour12: false,
-        timeZone: TZ,
-      }),
-    ) % 24
-  );
+  // ต้องดึงเฉพาะส่วน hour ออกมา — toLocaleDateString() คืนวันที่มาด้วย
+  // ("9/12/2026, 12") ซึ่ง Number() แปลงเป็น NaN แล้วทำให้ greetingFor()
+  // ตกไปเงื่อนไขสุดท้ายเสมอ (ทักทาย "ตอนเย็น" ตลอดทั้งวัน)
+  const hour = new Intl.DateTimeFormat("en-US", {
+    hour: "2-digit",
+    hourCycle: "h23",
+    timeZone: TZ,
+  })
+    .formatToParts(date)
+    .find((part) => part.type === "hour")?.value;
+
+  return Number(hour) % 24;
 }
