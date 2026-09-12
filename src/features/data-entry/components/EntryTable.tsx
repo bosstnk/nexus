@@ -1,7 +1,7 @@
 import clsx from "clsx";
-import { PencilIcon, TrashIcon } from "@/components/ui/icons";
 import { formatThaiMonthYear, formatThaiShortDate } from "@/lib/datetime";
-import type { EntryRecord } from "../data";
+import RowActions from "./RowActions";
+import type { EntryRecord } from "../types";
 import { formatMetric, metricHeader, type EntrySchema } from "../schemas";
 
 const HEAD_CELL =
@@ -16,8 +16,6 @@ const ACTIONS_WIDTH = 104;
 const columnWidth = (weight: number, total: number) =>
   `calc((100% - ${ACTIONS_WIDTH}px) * ${weight} / ${total})`;
 
-const ACTION_BUTTON =
-  "grid size-8 cursor-pointer place-items-center rounded-lg border border-neutral-300 bg-white text-neutral-500 transition-colors";
 
 export default function EntryTable({
   schema,
@@ -77,38 +75,18 @@ export default function EntryTable({
                 </td>
               ))}
 
-              <td className={CELL}>{record.submittedBy}</td>
+              <td className={CELL}>{record.createdBy}</td>
               <td className={NUMERIC_CELL}>
-                {formatThaiShortDate(record.submittedAt)}
+                {formatThaiShortDate(record.createdAt)}
               </td>
 
               <td className="px-4 py-3">
-                <div className="flex justify-end gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => onEdit(record)}
-                    aria-label={`แก้ไขข้อมูลเดือน ${formatThaiMonthYear(record.year, record.month)}`}
-                    title="แก้ไข"
-                    className={clsx(
-                      ACTION_BUTTON,
-                      "hover:border-green-200 hover:bg-green-50 hover:text-green-700",
-                    )}
-                  >
-                    <PencilIcon size={14} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onDelete(record)}
-                    aria-label={`ลบข้อมูลเดือน ${formatThaiMonthYear(record.year, record.month)}`}
-                    title="ลบ"
-                    className={clsx(
-                      ACTION_BUTTON,
-                      "hover:border-danger/30 hover:bg-danger-light hover:text-danger-dark",
-                    )}
-                  >
-                    <TrashIcon size={14} />
-                  </button>
-                </div>
+                <RowActions
+                  label={`ข้อมูลเดือน ${formatThaiMonthYear(record.year, record.month)}`}
+                  canEdit={record.canEdit}
+                  onEdit={() => onEdit(record)}
+                  onDelete={() => onDelete(record)}
+                />
               </td>
             </tr>
           ))}

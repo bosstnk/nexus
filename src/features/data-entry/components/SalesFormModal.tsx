@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import clsx from "clsx";
 import Button from "@/components/ui/Button";
@@ -12,32 +12,36 @@ import { inputBox } from "@/components/ui/formStyles";
 import { CheckIcon, XIcon } from "@/components/ui/icons";
 import { toISODate } from "@/lib/datetime";
 import type { Factory } from "@/features/factory/types";
+import type { Partner } from "@/features/partners/types";
 import {
-  MATERIAL_OPTIONS,
   MIXED_MATERIAL,
-  PARTNER_OPTIONS,
+  PARTNER_TYPES_FOR,
   SALES_META,
   SALE_TYPES,
   salesFormSchema,
-  toggleMaterial,
-  type SaleRecord,
-  type SaleType,
   type SalesFormValues,
 } from "../sales";
+import type { Material, Transaction, TransactionType } from "../types";
 
 const LABEL = "text-body-3 font-medium text-neutral-700";
 
-const TYPE_ORDER: SaleType[] = ["sell", "buy"];
+const TYPE_ORDER: TransactionType[] = ["sell", "buy"];
 
 export default function SalesFormModal({
   factory,
+  partners,
+  materials,
   initial,
+  error,
   onSave,
   onClose,
 }: {
   factory: Factory;
-  initial?: SaleRecord;
-  onSave: (values: SalesFormValues) => void;
+  partners: Partner[];
+  materials: Material[];
+  initial?: Transaction;
+  error?: string | null;
+  onSave: (values: SalesFormValues) => Promise<void>;
   onClose: () => void;
 }) {
   const SchemaIcon = SALES_META.icon;
@@ -46,6 +50,7 @@ export default function SalesFormModal({
     control,
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<SalesFormValues>({
     resolver: zodResolver(salesFormSchema),
@@ -54,12 +59,30 @@ export default function SalesFormModal({
     defaultValues: {
       type: initial?.type ?? "sell",
       date: initial?.date ?? "",
-      partner: initial?.partner ?? "",
-      materials: initial?.materials ?? [],
-      weight: initial ? String(initial.weight) : "",
+      partnerId: initial?.partnerId ?? "",
+      materialId: initial?.materialId ?? "",
+      weight: initial ? String(initial.weightKg) : "",
       amount: initial ? String(initial.amount) : "",
     },
   });
+
+  const selectedType = useWatch({ control, name: "type" });
+  const selectedPartnerId = useWatch({ control, name: "partnerId" });
+
+  // ซื้อต้องเป็นคู่ค้าที่ purchase/both · ขายต้องเป็น sale/both
+  const partnerOptions = partners
+    .filter((partner) => PARTNER_TYPES_FOR[selectedType].includes(partner.type))
+    .map((partner) => ({ value: partner.id, label: partner.name }));
+
+  // สลับซื้อ<->ขายแล้วคู่ค้าที่เลือกไว้อาจใช้ไม่ได้อีก ต้องล้างทิ้ง
+  useEffect(() => {
+    if (
+      selectedPartnerId &&
+      !partnerOptions.some((option) => option.value === selectedPartnerId)
+    ) {
+      setValue("partnerId", "", { shouldValidate: true });
+    }
+  }, [selectedPartnerId, partnerOptions, setValue]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -150,7 +173,8 @@ export default function SalesFormModal({
                       <button
                         key={id}
                         type="button"
-                        aria-pressed={isSelected}
+                        role="radio"
+                        aria-checked={isSelected}
                         onClick={() => field.onChange(id)}
                         className={clsx(
                           "flex cursor-pointer items-center justify-center gap-2 rounded-lg border px-3 py-3 text-body-2 font-semibold transition-colors",
@@ -194,40 +218,42 @@ export default function SalesFormModal({
             </span>
             <Controller
               control={control}
-              name="partner"
+              name="partnerId"
               render={({ field }) => (
                 <Select
                   id="sales-partner"
                   aria-labelledby="sales-partner-label"
                   value={field.value}
                   onChange={field.onChange}
-                  options={PARTNER_OPTIONS}
-                  placeholder="-- เลือกบริษัทคู่ค้า --"
-                  invalid={!!errors.partner}
+                  options={partnerOptions}
+                  placeholder={
+                    partnerOptions.length
+                      ? "-- เลือกบริษัทคู่ค้า --"
+                      : "ไม่มีคู่ค้าประเภทนี้ในทะเบียน"
+                  }
+                  invalid={!!errors.partnerId}
                 />
               )}
             />
-            <FieldError message={errors.partner?.message} />
+            <FieldError message={errors.partnerId?.message} />
           </div>
 
           <div className="flex flex-col gap-1.5">
             <span className={LABEL}>ประเภทวัสดุ</span>
             <Controller
               control={control}
-              name="materials"
+              name="materialId"
               render={({ field }) => (
-                <div className="flex flex-wrap gap-1.5">
-                  {MATERIAL_OPTIONS.map((material) => {
-                    const isSelected = field.value.includes(material);
-                    const isMixed = material === MIXED_MATERIAL;
+                <div role="radiogroup" aria-label="ประเภทวัสดุ" className="flex flex-wrap gap-1.5">
+                  {materials.map((material) => {
+                    const isSelected = field.value === material.id;
+                    const isMixed = material.name === MIXED_MATERIAL;
                     return (
                       <button
-                        key={material}
+                        key={material.id}
                         type="button"
                         aria-pressed={isSelected}
-                        onClick={() =>
-                          field.onChange(toggleMaterial(field.value, material))
-                        }
+                        onClick={() => field.onChange(material.id)}
                         className={clsx(
                           "inline-flex cursor-pointer items-center gap-1 rounded-full border px-3 py-1 text-body-3 transition-colors",
                           isSelected
@@ -238,14 +264,14 @@ export default function SalesFormModal({
                         )}
                       >
                         {isSelected && <CheckIcon size={10} strokeWidth={3} />}
-                        {material}
+                        {material.name}
                       </button>
                     );
                   })}
                 </div>
               )}
             />
-            <FieldError message={errors.materials?.message} />
+            <FieldError message={errors.materialId?.message} />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -265,7 +291,7 @@ export default function SalesFormModal({
                   {...register("weight")}
                 />
                 <span className="pointer-events-none absolute inset-y-0 right-4 flex items-center text-body-3 text-neutral-500">
-                  ตัน
+                  kg
                 </span>
               </div>
               <FieldError message={errors.weight?.message} />
@@ -294,6 +320,15 @@ export default function SalesFormModal({
             </div>
           </div>
         </div>
+
+        {error && (
+          <p
+            role="alert"
+            className="mx-5 mb-4 rounded-lg border border-danger/30 bg-danger-light px-3 py-2 text-body-3 text-danger-dark"
+          >
+            {error}
+          </p>
+        )}
 
         <div className="flex shrink-0 justify-end gap-2 border-t border-neutral-300 px-5 py-4">
           <Button type="button" variant="outline" size="small" onClick={onClose}>

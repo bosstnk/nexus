@@ -38,6 +38,54 @@ export type Database = {
         }
         Relationships: []
       }
+      electricity_reports: {
+        Row: {
+          consumption_kwh: number
+          cost: number
+          created_at: string
+          created_by: string
+          factory_id: string
+          id: string
+          report_month: string
+          updated_at: string
+        }
+        Insert: {
+          consumption_kwh: number
+          cost: number
+          created_at?: string
+          created_by: string
+          factory_id: string
+          id?: string
+          report_month: string
+          updated_at?: string
+        }
+        Update: {
+          consumption_kwh?: number
+          cost?: number
+          created_at?: string
+          created_by?: string
+          factory_id?: string
+          id?: string
+          report_month?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "electricity_reports_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "electricity_reports_factory_fkey"
+            columns: ["factory_id"]
+            isOneToOne: false
+            referencedRelation: "factories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       factories: {
         Row: {
           created_at: string
@@ -136,6 +184,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      materials: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       news: {
         Row: {
@@ -247,6 +316,170 @@ export type Database = {
         }
         Relationships: []
       }
+      transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string
+          factory_id: string
+          id: string
+          material_id: string
+          partner_id: string
+          transaction_date: string
+          type: Database["public"]["Enums"]["transaction_type"]
+          updated_at: string
+          weight_kg: number
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by: string
+          factory_id: string
+          id?: string
+          material_id: string
+          partner_id: string
+          transaction_date: string
+          type: Database["public"]["Enums"]["transaction_type"]
+          updated_at?: string
+          weight_kg: number
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string
+          factory_id?: string
+          id?: string
+          material_id?: string
+          partner_id?: string
+          transaction_date?: string
+          type?: Database["public"]["Enums"]["transaction_type"]
+          updated_at?: string
+          weight_kg?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_factory_fkey"
+            columns: ["factory_id"]
+            isOneToOne: false
+            referencedRelation: "factories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_material_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "transactions_partner_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      water_reports: {
+        Row: {
+          consumption_m3: number
+          cost: number
+          created_at: string
+          created_by: string
+          factory_id: string
+          id: string
+          report_month: string
+          updated_at: string
+        }
+        Insert: {
+          consumption_m3: number
+          cost: number
+          created_at?: string
+          created_by: string
+          factory_id: string
+          id?: string
+          report_month: string
+          updated_at?: string
+        }
+        Update: {
+          consumption_m3?: number
+          cost?: number
+          created_at?: string
+          created_by?: string
+          factory_id?: string
+          id?: string
+          report_month?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "water_reports_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "water_reports_factory_fkey"
+            columns: ["factory_id"]
+            isOneToOne: false
+            referencedRelation: "factories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      workforce_reports: {
+        Row: {
+          created_at: string
+          created_by: string
+          factory_id: string
+          headcount: number
+          id: string
+          report_month: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          factory_id: string
+          headcount: number
+          id?: string
+          report_month: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          factory_id?: string
+          headcount?: number
+          id?: string
+          report_month?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workforce_reports_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "workforce_reports_factory_fkey"
+            columns: ["factory_id"]
+            isOneToOne: false
+            referencedRelation: "factories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -257,6 +490,7 @@ export type Database = {
     Enums: {
       news_priority: "urgent" | "high" | "normal" | "info"
       partner_type: "purchase" | "sale" | "both"
+      transaction_type: "buy" | "sell"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -386,6 +620,7 @@ export const Constants = {
     Enums: {
       news_priority: ["urgent", "high", "normal", "info"],
       partner_type: ["purchase", "sale", "both"],
+      transaction_type: ["buy", "sell"],
     },
   },
 } as const

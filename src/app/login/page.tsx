@@ -36,13 +36,13 @@ export default function LoginPage() {
       }
       headline={
         <>
-          One Team, One Goal
+          One Team, One View
           <span className="block text-[25px]">
-            เข้าสู่ระบบเพื่อก้าวไปข้างหน้าด้วยกัน
+            เข้าถึงข้อมูล ติดตามงาน และมองเห็นภาพรวมการทำงานได้ในที่เดียว
           </span>
         </>
       }
-      description="Sorting today, sustaining tomorrow. Small actions today create a better tomorrow."
+      description="Better data, better visibility, better decisions."
     >
       <div className="flex min-h-screen flex-col justify-between p-20">
         {/* Cross-link to sign-up */}

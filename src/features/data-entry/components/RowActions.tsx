@@ -4,13 +4,27 @@ import { ACTION_BUTTON } from "./tableStyles";
 
 export default function RowActions({
   label,
+  canEdit,
   onEdit,
   onDelete,
 }: {
   label: string;
+  canEdit: boolean;
   onEdit: () => void;
   onDelete: () => void;
 }) {
+  // ตัวที่กันจริงคือ RLS ฝั่ง DB — ตรงนี้แค่ไม่โชว์ปุ่มที่กดไปก็ไม่ผ่าน
+  if (!canEdit) {
+    return (
+      <div
+        className="flex justify-end pr-2 text-body-3 text-neutral-400"
+        title="แก้ไขได้เฉพาะข้อมูลที่ตัวเองบันทึกภายใน 1 วัน หรือโดยผู้ดูแลโรงงาน"
+      >
+        —
+      </div>
+    );
+  }
+
   return (
     <div className="flex justify-end gap-1.5">
       <button

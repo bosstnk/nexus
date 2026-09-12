@@ -9,9 +9,10 @@ import FieldError from "@/components/ui/FieldError";
 import Select from "@/components/ui/Select";
 import { inputBox } from "@/components/ui/formStyles";
 import { AlertTriangleIcon, XIcon } from "@/components/ui/icons";
-import { thaiMonthNames } from "@/lib/datetime";
+import { formatThaiMonthYear, thaiMonthNames } from "@/lib/datetime";
 import type { Factory } from "@/features/factory/types";
-import { YEARS, type EntryRecord } from "../data";
+import { YEARS } from "../data";
+import type { EntryRecord } from "../types";
 import {
   buildEntryFormSchema,
   type EntryFormValues,
@@ -35,6 +36,7 @@ export default function EntryFormModal({
   factory,
   initial,
   duplicateOf,
+  error,
   onSave,
   onClose,
 }: {
@@ -42,7 +44,8 @@ export default function EntryFormModal({
   factory: Factory;
   initial?: EntryRecord;
   duplicateOf: (year: number, month: number) => boolean;
-  onSave: (values: EntryFormValues) => void;
+  error?: string | null;
+  onSave: (values: EntryFormValues) => Promise<void>;
   onClose: () => void;
 }) {
   const SchemaIcon = schema.icon;
@@ -150,6 +153,20 @@ export default function EntryFormModal({
             </div>
           </div>
 
+          {initial ? (
+            // แก้ของเดิม: เดือนล็อกไว้ ย้ายเดือนไม่ได้ ถ้าจะแก้เดือนให้ลบแล้วเพิ่มใหม่
+            <div className="flex flex-col gap-1.5">
+              <span className={LABEL}>เดือนที่บันทึก</span>
+              <div className="flex items-center justify-between rounded-lg border border-neutral-300 bg-neutral-50 px-3 py-2">
+                <span className="text-body-2 font-medium text-neutral-900">
+                  {formatThaiMonthYear(initial.year, initial.month)}
+                </span>
+                <span className="text-[10px] text-neutral-500">
+                  เปลี่ยนเดือนไม่ได้ — ลบแล้วเพิ่มใหม่แทน
+                </span>
+              </div>
+            </div>
+          ) : (
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1.5">
               <span id="entry-year-label" className={LABEL}>
@@ -189,6 +206,7 @@ export default function EntryFormModal({
               />
             </div>
           </div>
+          )}
 
           {schema.metrics.map((metric) => {
             const error = errors.values?.[metric.key]?.message;
@@ -229,6 +247,15 @@ export default function EntryFormModal({
             </div>
           )}
         </div>
+
+        {error && (
+          <p
+            role="alert"
+            className="mx-5 mb-4 rounded-lg border border-danger/30 bg-danger-light px-3 py-2 text-body-3 text-danger-dark"
+          >
+            {error}
+          </p>
+        )}
 
         <div className="flex shrink-0 justify-end gap-2 border-t border-neutral-300 px-5 py-4">
           <Button type="button" variant="outline" size="small" onClick={onClose}>
