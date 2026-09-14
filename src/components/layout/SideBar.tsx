@@ -10,6 +10,8 @@ import {
   LayoutDashboardIcon,
   ClipboardListIcon,
   HandshakeIcon,
+  KeyRoundIcon,
+  ShieldCheckIcon,
 } from "@/components/ui/icons";
 import SignOutButton from "@/features/auth/components/SignOutButton";
 
@@ -28,18 +30,33 @@ const MENU = [
     href: "/records",
   },
   { id: "partners", icon: HandshakeIcon, label: "คู่ค้า", href: "/partners" },
+  { id: "access", icon: KeyRoundIcon, label: "สิทธิ์ของฉัน", href: "/access" },
+  {
+    id: "permissions",
+    icon: ShieldCheckIcon,
+    label: "จัดการสิทธิ์",
+    href: "/permissions",
+  },
 ];
 
 type SideBarProps = {
   name?: string;
   role?: string;
+  // เป็นแอดมินของโรงงานที่เลือกอยู่ — สลับโรงงานแล้วค่านี้เปลี่ยนตาม
+  canManageAccess?: boolean;
 };
 
 export default function SideBar({
   name = "User",
   role = "Member",
+  canManageAccess = false,
 }: SideBarProps) {
   const pathname = usePathname();
+
+  // ซ่อนแค่เมนู — ตัวหน้า /permissions และ RLS ยังตรวจสิทธิ์ซ้ำเอง
+  const menu = MENU.filter(
+    (item) => item.id !== "permissions" || canManageAccess,
+  );
 
   return (
     <aside className="flex min-h-screen w-64 shrink-0 flex-col border-r-[0.5px] border-neutral-300 bg-white">
@@ -48,7 +65,7 @@ export default function SideBar({
       </div>
 
       <nav className="flex-1 space-y-1 p-2">
-        {MENU.map((item) => {
+        {menu.map((item) => {
           const Icon = item.icon;
           // เทียบตรง ๆ ก่อน ไม่งั้น href "/" จะ active ทุกหน้า
           const isActive =

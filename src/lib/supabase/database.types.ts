@@ -113,23 +113,84 @@ export type Database = {
         }
         Relationships: []
       }
+      factory_join_requests: {
+        Row: {
+          factory_id: string
+          id: string
+          request_reason: string | null
+          requested_at: string
+          requested_role: Database["public"]["Enums"]["factory_role"]
+          review_reason: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["join_request_status"]
+          user_id: string
+        }
+        Insert: {
+          factory_id: string
+          id?: string
+          request_reason?: string | null
+          requested_at?: string
+          requested_role: Database["public"]["Enums"]["factory_role"]
+          review_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["join_request_status"]
+          user_id: string
+        }
+        Update: {
+          factory_id?: string
+          id?: string
+          request_reason?: string | null
+          requested_at?: string
+          requested_role?: Database["public"]["Enums"]["factory_role"]
+          review_reason?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["join_request_status"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "factory_join_requests_factory_fkey"
+            columns: ["factory_id"]
+            isOneToOne: false
+            referencedRelation: "factories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "factory_join_requests_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "factory_join_requests_user_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       factory_members: {
         Row: {
           factory_id: string
           joined_at: string
-          role: string
+          role: Database["public"]["Enums"]["factory_role"]
           user_id: string
         }
         Insert: {
           factory_id: string
           joined_at?: string
-          role?: string
+          role?: Database["public"]["Enums"]["factory_role"]
           user_id: string
         }
         Update: {
           factory_id?: string
           joined_at?: string
-          role?: string
+          role?: Database["public"]["Enums"]["factory_role"]
           user_id?: string
         }
         Relationships: [
@@ -288,6 +349,7 @@ export type Database = {
           avatar_url: string | null
           birth_date: string
           created_at: string | null
+          email: string | null
           first_name: string
           id: string
           last_name: string
@@ -298,6 +360,7 @@ export type Database = {
           avatar_url?: string | null
           birth_date: string
           created_at?: string | null
+          email?: string | null
           first_name: string
           id: string
           last_name: string
@@ -308,6 +371,7 @@ export type Database = {
           avatar_url?: string | null
           birth_date?: string
           created_at?: string | null
+          email?: string | null
           first_name?: string
           id?: string
           last_name?: string
@@ -485,9 +549,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      is_factory_admin: { Args: { fid: string }; Returns: boolean }
       is_factory_member: { Args: { fid: string }; Returns: boolean }
     }
     Enums: {
+      factory_role: "viewer" | "member" | "admin"
+      join_request_status: "pending" | "approved" | "rejected"
       news_priority: "urgent" | "high" | "normal" | "info"
       partner_type: "purchase" | "sale" | "both"
       transaction_type: "buy" | "sell"
@@ -618,6 +685,8 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      factory_role: ["viewer", "member", "admin"],
+      join_request_status: ["pending", "approved", "rejected"],
       news_priority: ["urgent", "high", "normal", "info"],
       partner_type: ["purchase", "sale", "both"],
       transaction_type: ["buy", "sell"],
