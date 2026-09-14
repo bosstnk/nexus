@@ -4,7 +4,8 @@
 // (ฝั่งนี้มีไว้ซ่อนปุ่มเท่านั้น ตัวที่กันจริงคือ policy)
 export const EDIT_WINDOW_HOURS = 24;
 
-const ADMIN_ROLES = ["owner", "admin"];
+// enum factory_role มีแค่ viewer | member | admin — "owner" ไม่มีแล้ว
+const ADMIN_ROLES = ["admin"];
 
 export const isFactoryAdmin = (role: string) =>
   ADMIN_ROLES.includes(role.toLowerCase());
